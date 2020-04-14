@@ -22,7 +22,18 @@ import "pages"
 
 ApplicationWindow
 {
-    initialPage: Component { OverviewPage { } }
+
+    Component {
+        id: welcomePage
+        WelcomePage {}
+    }
+
+    Component {
+        id: overviewPage
+        OverviewPage {}
+    }
+
+    initialPage: flickrAccount.isLinked() ? overviewPage : welcomePage
     cover: Qt.resolvedUrl("pages/CoverPage.qml")
     allowedOrientations: defaultAllowedOrientations
 }

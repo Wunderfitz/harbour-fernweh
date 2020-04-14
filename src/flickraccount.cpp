@@ -8,32 +8,13 @@
 #include "o1flickrglobals.h"
 
 FlickrAccount::FlickrAccount(QObject *parent) : QObject(parent),
-                                                o1(new O1Flickr(this)),
-                                                networkConfigurationManager(new QNetworkConfigurationManager(this))
+                                                networkConfigurationManager(new QNetworkConfigurationManager(this)),
+                                                o1(new O1Flickr(this)),                                                
+                                                manager(new QNetworkAccessManager(this))
 {
     qDebug() << "[FlickrAccount] Initializing account handler...";
-    connect(o1, &O1Flickr::linkingFailed, this, &FlickrAccount::handleLinkingFailed);
-    connect(o1, &O1Flickr::linkingSucceeded, this, &FlickrAccount::handleLinkingSucceeded);
-    connect(o1, &O1Flickr::openBrowser, this, &FlickrAccount::handleOpenUrl);
-
     obtainEncryptionKey();
     initializeEnvironment();
-}
-
-void FlickrAccount::handleLinkingFailed()
-{
-    qDebug() << "[FlickrAccount] Linking failed! :(";
-}
-
-void FlickrAccount::handleLinkingSucceeded()
-{
-    qDebug() << "[FlickrAccount] Linking succeeded! :)";
-}
-
-void FlickrAccount::handleOpenUrl(const QUrl &url)
-{
-    qDebug() << "[FlickrAccount] Opening URL " << url.url();
-    emit openUrl(url.url());
 }
 
 void FlickrAccount::obtainEncryptionKey()
@@ -89,13 +70,68 @@ void FlickrAccount::obtainEncryptionKey()
 
 void FlickrAccount::initializeEnvironment()
 {
-
+    qDebug() << "[FlickrAccount] Initializing environment...";
     O0SettingsStore *settingsStore = new O0SettingsStore(encryptionKey, this);
     o1->setStore(settingsStore);
     o1->setClientId(FLICKR_CLIENT_KEY);
     o1->setClientSecret(FLICKR_CLIENT_SECRET);
 
-    if (!o1->linked()) {
-        o1->link();
+    connect(o1, &O1Flickr::pinRequestError, this, &FlickrAccount::handlePinRequestError);
+    connect(o1, &O1Flickr::pinRequestSuccessful, this, &FlickrAccount::handlePinRequestSuccessful);
+    connect(o1, &O1Flickr::linkingFailed, this, &FlickrAccount::handleLinkingFailed);
+    connect(o1, &O1Flickr::linkingSucceeded, this, &FlickrAccount::handleLinkingSucceeded);
+
+    requestor = new O1Requestor(manager, o1, this);
+    flickrApi = new FlickrApi(requestor, manager, this);
+}
+
+void FlickrAccount::obtainPinUrl()
+{
+    if (networkConfigurationManager->isOnline()) {
+        o1->obtainPinUrl();
+    } else {
+        emit pinRequestError("I'm sorry, your device is offline!");
     }
+}
+
+void FlickrAccount::enterPin(const QString &pin)
+{
+    qDebug() << "PIN entered: " + pin;
+    if (networkConfigurationManager->isOnline()) {
+        o1->verifyPin(pin);
+    } else {
+        emit linkingFailed("I'm sorry, your device is offline!");
+    }
+}
+
+bool FlickrAccount::isLinked()
+{
+    return o1->linked();
+}
+
+FlickrApi *FlickrAccount::getFlickrApi()
+{
+    return this->flickrApi;
+}
+
+void FlickrAccount::handlePinRequestError(const QString &errorMessage)
+{
+    emit pinRequestError("I'm sorry, there was an error: " + errorMessage);
+}
+
+void FlickrAccount::handlePinRequestSuccessful(const QUrl &url)
+{
+    emit pinRequestSuccessful(url.toString());
+}
+
+void FlickrAccount::handleLinkingFailed()
+{
+    qDebug() << "Linking failed! :(";
+    emit linkingFailed("Linking error");
+}
+
+void FlickrAccount::handleLinkingSucceeded()
+{
+    qDebug() << "Linking successful! :)";
+    emit linkingSuccessful();
 }

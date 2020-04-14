@@ -61,6 +61,7 @@ void O2ReplyServer::onBytesReady() {
     qDebug() << "O2ReplyServer::onBytesReady: Sent reply";
 
     QByteArray data = socket->readAll();
+    qDebug() << QString::fromUtf8(data);
     QMap<QString, QString> queryParams = parseQueryParams(&data);
     if (queryParams.isEmpty()) {
         if (tries_ < maxtries_ ) {

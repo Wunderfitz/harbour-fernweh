@@ -23,15 +23,134 @@ Page {
     id: overviewPage
     allowedOrientations: Orientation.All
 
+    property bool initializationCompleted : false;
+
+    Component.onCompleted: {
+        flickrApi.testLogin();
+    }
+
+    function hideAccountVerificationColumn() {
+        accountVerificationColumn.opacity = 0;
+        accountVerificationIndicator.running = false;
+        accountVerificationColumn.visible = false;
+    }
+
+    function showAccountVerificationColumn() {
+        accountVerificationColumn.opacity = 1;
+        accountVerificationIndicator.running = true;
+        accountVerificationColumn.visible = true;
+    }
+
     Connections {
-        target: flickrAccount
-        onOpenUrl: {
-            Qt.openUrlExternally(url);
+        target: flickrApi
+        onTestLoginSuccessful: {
+            if (!overviewPage.initializationCompleted) {
+                hideAccountVerificationColumn();
+                overviewContainer.visible = true;
+                overviewPageHeader.title = "Welcome " + result.user.username._content;
+                overviewPage.initializationCompleted = true;
+            }
         }
+        onTestLoginError: {
+            if (!overviewPage.initializationCompleted) {
+                hideAccountVerificationColumn();
+                verificationFailedColumn.visible = true;
+                verificationFailedColumn.opacity = 1;
+            }
+        }
+
+    }
+
+    Column {
+        y: ( parent.height - ( accountVerificationImage.height + accountVerificationIndicator.height + accountVerificationLabel.height + ( 3 * Theme.paddingSmall ) ) ) / 2
+        width: parent.width
+        id: accountVerificationColumn
+        spacing: Theme.paddingSmall
+        Behavior on opacity { NumberAnimation {} }
+
+        Image {
+            id: accountVerificationImage
+            source: "../../images/fernweh.png"
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+
+            fillMode: Image.PreserveAspectFit
+            width: 1/2 * parent.width
+        }
+
+        InfoLabel {
+            id: accountVerificationLabel
+            text: qsTr("Saying hello to Flickr...")
+        }
+
+        BusyIndicator {
+            id: accountVerificationIndicator
+            anchors.horizontalCenter: parent.horizontalCenter
+            running: true
+            size: BusyIndicatorSize.Large
+        }
+
+    }
+
+    Column {
+        y: ( parent.height - ( verificationFailedImage.height + verificationFailedInfoLabel.height + verifyAgainButton.height + reauthenticateButton.height + ( 4 * Theme.paddingSmall ) ) ) / 2
+        width: parent.width
+        id: verificationFailedColumn
+        spacing: Theme.paddingSmall
+        Behavior on opacity { NumberAnimation {} }
+        opacity: 0
+        visible: false
+
+        Image {
+            id: verificationFailedImage
+            source: "../../images/fernweh.png"
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+
+            fillMode: Image.PreserveAspectFit
+            width: 1/2 * parent.width
+        }
+
+        InfoLabel {
+            id: verificationFailedInfoLabel
+            font.pixelSize: Theme.fontSizeLarge
+            text: qsTr("Fernweh could not log you in!")
+        }
+
+        Button {
+            id: verifyAgainButton
+            text: qsTr("Try again")
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+            onClicked: {
+                verificationFailedColumn.visible = false;
+                showAccountVerificationColumn()
+                accountModel.verifyCredentials()
+            }
+        }
+
+        Button {
+            id: reauthenticateButton
+            text: qsTr("Authenticate")
+            anchors {
+                horizontalCenter: parent.horizontalCenter
+            }
+            onClicked: {
+                verificationFailedColumn.visible = false;
+                pageStack.clear()
+                pageStack.push(welcomePage)
+            }
+        }
+
     }
 
     SilicaFlickable {
+        id: overviewContainer
         anchors.fill: parent
+        visible: false
         contentHeight: parent.height
 
         PullDownMenu {
@@ -47,6 +166,7 @@ Page {
             width: overviewPage.width
             spacing: Theme.paddingLarge
             PageHeader {
+                id: overviewPageHeader
                 title: qsTr("Fernweh")
             }
         }

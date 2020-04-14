@@ -258,7 +258,7 @@ void O1::link() {
 
     // Create initial token request
     QList<O0RequestParameter> headers;
-    headers.append(O0RequestParameter(O2_OAUTH_CALLBACK, callbackUrl().arg(localPort()).toLatin1()));
+    headers.append(O0RequestParameter(O2_OAUTH_CALLBACK, callbackUrl().toLatin1()));
     headers.append(O0RequestParameter(O2_OAUTH_CONSUMER_KEY, clientId().toLatin1()));
     headers.append(O0RequestParameter(O2_OAUTH_NONCE, nonce()));
     headers.append(O0RequestParameter(O2_OAUTH_TIMESTAMP, QString::number(QDateTime::currentDateTimeUtc().toTime_t()).toLatin1()));

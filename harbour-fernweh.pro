@@ -19,10 +19,12 @@ QT += core network dbus positioning sql
 include(src/o2/o2.pri)
 
 SOURCES += src/harbour-fernweh.cpp \
-    src/flickraccount.cpp
+    src/flickraccount.cpp \
+    src/flickrapi.cpp
 
 DISTFILES += qml/harbour-fernweh.qml \
     qml/pages/*.qml \
+    qml/components/*.qml \
     rpm/harbour-fernweh.changes.in \
     rpm/harbour-fernweh.spec \
     rpm/harbour-fernweh.yaml \
@@ -63,4 +65,5 @@ INSTALLS += 86.png 108.png 128.png 172.png 256.png \
 TRANSLATIONS += translations/harbour-fernweh-de.ts
 
 HEADERS += \
-    src/flickraccount.h
+    src/flickraccount.h \
+    src/flickrapi.h

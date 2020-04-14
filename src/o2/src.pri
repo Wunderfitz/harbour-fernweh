@@ -5,6 +5,7 @@ lessThan(QT_MAJOR_VERSION, 5): QT *= script
 INCLUDEPATH += $$PWD
 SOURCES += \
     $$PWD/o1.cpp \
+    $$PWD/o1flickr.cpp \
     $$PWD/o1requestor.cpp \
     $$PWD/o1smugmug.cpp \
     $$PWD/o1timedreply.cpp \

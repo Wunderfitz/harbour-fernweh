@@ -14,6 +14,16 @@ public:
         setAuthorizeUrl(QUrl("https://www.flickr.com/services/oauth/authorize?perms=write"));
         setAccessTokenUrl(QUrl("https://www.flickr.com/services/oauth/access_token"));
     }
+    void obtainPinUrl();
+    void verifyPin(const QString &pin);
+
+signals:
+    void pinRequestError(const QString &errorMessage);
+    void pinRequestSuccessful(const QUrl &url);
+
+private slots:
+    virtual void onPinRequestError(QNetworkReply::NetworkError error);
+    virtual void onPinRequestFinished();
 };
 
 #endif // O1FLICKR_H

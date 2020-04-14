@@ -28,6 +28,7 @@
 #include <QGuiApplication>
 
 #include "flickraccount.h"
+#include "flickrapi.h"
 
 int main(int argc, char *argv[])
 {
@@ -38,6 +39,9 @@ int main(int argc, char *argv[])
 
     FlickrAccount flickrAccount;
     context->setContextProperty("flickrAccount", &flickrAccount);
+
+    FlickrApi *flickrApi = flickrAccount.getFlickrApi();
+    context->setContextProperty("flickrApi", flickrApi);
 
     view->setSource(SailfishApp::pathTo("qml/harbour-fernweh.qml"));
     view->show();
