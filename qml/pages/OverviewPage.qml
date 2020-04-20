@@ -17,16 +17,30 @@
     along with Fernweh. If not, see <http://www.gnu.org/licenses/>.
 */
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
+import QtMultimedia 5.0
 import Sailfish.Silica 1.0
+import Nemo.Notifications 1.0
+
+
+import "../components"
+import "../js/functions.js" as Functions
 
 Page {
     id: overviewPage
     allowedOrientations: Orientation.All
 
     property bool initializationCompleted : false;
+    property int activeTabId: 0;
+    property variant profileEntity;
 
     Component.onCompleted: {
         flickrApi.testLogin();
+    }
+
+    function resetFocus() {
+        searchField.focus = false;
+        overviewPage.focus = true;
     }
 
     function hideAccountVerificationColumn() {
@@ -41,14 +55,151 @@ Page {
         accountVerificationColumn.visible = true;
     }
 
+    function getNavigationRowSize() {
+        return Theme.iconSizeMedium + Theme.fontSizeMedium + Theme.paddingMedium;
+    }
+
+    function handleOwnPicturesClicked() {
+        if (overviewPage.activeTabId === 0) {
+            ownPicturesListView.scrollToTop();
+        } else {
+            viewsSlideshow.opacity = 0;
+            slideshowVisibleTimer.goToTab(0);
+            openTab(0);
+        }
+    }
+
+    function handleNotificationsClicked() {
+        if (overviewPage.activeTabId === 1) {
+            ownAlbumsListView.scrollToTop();
+        } else {
+            viewsSlideshow.opacity = 0;
+            slideshowVisibleTimer.goToTab(1);
+            openTab(1);
+        }
+    }
+
+    function handleMessagesClicked() {
+        viewsSlideshow.opacity = 0;
+        slideshowVisibleTimer.goToTab(2);
+        openTab(2);
+    }
+
+    function handleSearchClicked() {
+        if (overviewPage.activeTabId === 3) {
+            searchResultsListView.scrollToTop();
+            usersSearchResultsListView.scrollToTop();
+        } else {
+            viewsSlideshow.opacity = 0;
+            slideshowVisibleTimer.goToTab(3);
+            openTab(3);
+        }
+    }
+
+    function handleListsClicked() {
+        viewsSlideshow.opacity = 0;
+        slideshowVisibleTimer.goToTab(4);
+        openTab(4);
+    }
+
+    function handleProfileClicked() {
+        if (overviewPage.activeTabId === 5) {
+            profileEntity.scrollToTop();
+        } else {
+            viewsSlideshow.opacity = 0;
+            slideshowVisibleTimer.goToTab(5);
+            openTab(5);
+        }
+    }
+
+    function openTab(tabId) {
+
+        activeTabId = tabId;
+
+        switch (tabId) {
+        case 0:
+            ownPicturesButtonPortrait.isActive = true;
+            ownPicturesButtonLandscape.isActive = true;
+            ownAlbumsButtonPortrait.isActive = false;
+            ownAlbumsButtonLandscape.isActive = false;
+            interestingnessButtonPortrait.isActive = false;
+            interestingnessButtonLandscape.isActive = false;
+            searchButtonPortrait.isActive = false;
+            searchButtonLandscape.isActive = false;
+            listsButtonPortrait.isActive = false;
+            listsButtonLandscape.isActive = false;
+            profileButtonPortrait.isActive = false;
+            profileButtonLandscape.isActive = false;
+            break;
+        case 1:
+            ownPicturesButtonPortrait.isActive = false;
+            ownPicturesButtonLandscape.isActive = false;
+            ownAlbumsButtonPortrait.isActive = true;
+            ownAlbumsButtonLandscape.isActive = true;
+            interestingnessButtonPortrait.isActive = false;
+            interestingnessButtonLandscape.isActive = false;
+            searchButtonPortrait.isActive = false;
+            searchButtonLandscape.isActive = false;
+            listsButtonPortrait.isActive = false;
+            listsButtonLandscape.isActive = false;
+            profileButtonPortrait.isActive = false;
+            profileButtonLandscape.isActive = false;
+            break;
+        case 2:
+            ownPicturesButtonPortrait.isActive = false;
+            ownPicturesButtonLandscape.isActive = false;
+            ownAlbumsButtonPortrait.isActive = false;
+            ownAlbumsButtonLandscape.isActive = false;
+            interestingnessButtonPortrait.isActive = true;
+            interestingnessButtonLandscape.isActive = true;
+            searchButtonPortrait.isActive = false;
+            searchButtonLandscape.isActive = false;
+            listsButtonPortrait.isActive = false;
+            listsButtonLandscape.isActive = false;
+            profileButtonPortrait.isActive = false;
+            profileButtonLandscape.isActive = false;
+            break;
+        case 3:
+            ownPicturesButtonPortrait.isActive = false;
+            ownPicturesButtonLandscape.isActive = false;
+            ownAlbumsButtonPortrait.isActive = false;
+            ownAlbumsButtonLandscape.isActive = false;
+            interestingnessButtonPortrait.isActive = false;
+            interestingnessButtonLandscape.isActive = false;
+            searchButtonPortrait.isActive = true;
+            searchButtonLandscape.isActive = true;
+            listsButtonPortrait.isActive = false;
+            listsButtonLandscape.isActive = false;
+            profileButtonPortrait.isActive = false;
+            profileButtonLandscape.isActive = false;
+            break;
+        case 4:
+            ownPicturesButtonPortrait.isActive = false;
+            ownPicturesButtonLandscape.isActive = false;
+            ownAlbumsButtonPortrait.isActive = false;
+            ownAlbumsButtonLandscape.isActive = false;
+            interestingnessButtonPortrait.isActive = false;
+            interestingnessButtonLandscape.isActive = false;
+            searchButtonPortrait.isActive = false;
+            searchButtonLandscape.isActive = false;
+            listsButtonPortrait.isActive = true;
+            listsButtonLandscape.isActive = true;
+            profileButtonPortrait.isActive = false;
+            profileButtonLandscape.isActive = false;
+            break;
+        default:
+            console.log("Some strange navigation happened!")
+        }
+    }
+
     Connections {
         target: flickrApi
         onTestLoginSuccessful: {
             if (!overviewPage.initializationCompleted) {
                 hideAccountVerificationColumn();
                 overviewContainer.visible = true;
-                overviewPageHeader.title = "Welcome " + result.user.username._content;
                 overviewPage.initializationCompleted = true;
+                console.log("Successfully authenticated user " + result.user.username._content);
             }
         }
         onTestLoginError: {
@@ -59,6 +210,21 @@ Page {
             }
         }
 
+    }
+
+    Item {
+        id: persistentNotificationItem
+        enabled: false
+        width: parent.width
+        height: persistentNotification.height
+        y: parent.height - getNavigationRowSize() - persistentNotification.height - Theme.paddingSmall
+        z: 42
+
+        AppNotificationItem {
+            id: persistentNotification
+            visible: persistentNotificationItem.enabled
+            opacity: persistentNotificationItem.enabled ? 1 : 0
+        }
     }
 
     Column {
@@ -147,28 +313,843 @@ Page {
 
     }
 
+
     SilicaFlickable {
         id: overviewContainer
         anchors.fill: parent
         visible: false
         contentHeight: parent.height
+        contentWidth: parent.width
 
         PullDownMenu {
-            MenuItem {
-                text: qsTr("About Fernweh")
-                onClicked: pageStack.push(Qt.resolvedUrl("../pages/AboutPage.qml"))
+            PullDownMenu {
+                MenuItem {
+                    text: qsTr("About Fernweh")
+                    onClicked: pageStack.push(Qt.resolvedUrl("../pages/AboutPage.qml"))
+                }
+            }
+        }
+
+        Loader {
+            id: pushUpMenuLoader
+            active: overviewPage.isPortrait
+            sourceComponent: pushUpMenuComponent
+        }
+
+        Component {
+            id: pushUpMenuComponent
+            PushUpMenu {
+                MenuItem {
+                    text: qsTr("About Fernweh")
+                    onClicked: pageStack.push(Qt.resolvedUrl("../pages/AboutPage.qml"))
+                }
             }
         }
 
         Column {
             id: overviewColumn
+            opacity: 0
+            visible: false
+            Behavior on opacity { NumberAnimation {} }
+            width: parent.width
+            height: parent.height
 
-            width: overviewPage.width
-            spacing: Theme.paddingLarge
-            PageHeader {
-                id: overviewPageHeader
-                title: qsTr("Fernweh")
+            Row {
+                id: overviewRow
+                width: parent.width
+                height: parent.height - ( overviewPage.isLandscape ? 0 : getNavigationRowSize() )
+                spacing: Theme.paddingSmall
+
+                VisualItemModel {
+                    id: viewsModel
+
+                    Item {
+                        id: ownPicturesView
+                        width: viewsSlideshow.width
+                        height: viewsSlideshow.height
+
+                        property bool loaded : false;
+                        property bool reloading: false;
+
+//                        Connections {
+//                            target: timelineModel
+//                            onHomeTimelineStartUpdate: {
+//                                ownPicturesListView.currentIndex = -1;
+//                                ownPicturesListView.footer = ownPicturesFooterComponent;
+//                            }
+
+//                            onHomeTimelineUpdated: {
+//                                ownPicturesListView.currentIndex = modelIndex;
+//                                ownPicturesView.loaded = true;
+//                                ownPicturesView.reloading = false;
+//                            }
+//                            onHomeTimelineError: {
+//                                ownPicturesView.loaded = true;
+//                                ownPicturesView.reloading = false;
+//                                overviewNotification.show(errorMessage);
+//                            }
+//                            onHomeTimelineEndReached: {
+//                                ownPicturesListView.footer = null;
+//                                overviewNotification.show(qsTr("No tweets found. Follow more people to get their tweets in your timeline!"));
+//                            }
+//                        }
+
+                        Column {
+                            width: parent.width
+                            height: ownPicturesProgressLabel.height + ownPicturesProgressIndicator.height + Theme.paddingSmall
+                            visible: !ownPicturesView.loaded
+                            opacity: ownPicturesView.loaded ? 0 : 1
+                            id: ownPicturesProgressColumn
+                            spacing: Theme.paddingSmall
+                            Behavior on opacity { NumberAnimation {} }
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            InfoLabel {
+                                id: ownPicturesProgressLabel
+                                text: qsTr("Loading own pictures...")
+                            }
+
+                            BusyIndicator {
+                                id: ownPicturesProgressIndicator
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                running: !ownPicturesView.loaded
+                                size: BusyIndicatorSize.Large
+                            }
+                        }
+
+                        SilicaListView {
+                            id: ownPicturesListView
+                            opacity: ownPicturesView.loaded ? 1 : 0
+                            Behavior on opacity { NumberAnimation {} }
+                            visible: ownPicturesView.loaded
+                            width: parent.width
+                            height: parent.height
+                            contentHeight: homeTimelineTweet.height
+                            clip: true
+
+                            model: timelineModel
+
+                            delegate: Tweet {
+                                id: homeTimelineTweet
+                                tweetModel: display
+                                userId: overviewPage.myUser.id_str
+                            }
+
+                            onMovementEnded: {
+                                timelineModel.setCurrentTweetId(ownPicturesListView.itemAt(ownPicturesListView.contentX, ( ownPicturesListView.contentY + Math.round(overviewPage.height / 2))).tweetModel.id_str);
+                            }
+
+                            onQuickScrollAnimatingChanged: {
+                                if (!quickScrollAnimating) {
+                                    timelineModel.setCurrentTweetId(ownPicturesListView.itemAt(ownPicturesListView.contentX, ( ownPicturesListView.contentY + Math.round(overviewPage.height / 2))).tweetModel.id_str);
+                                }
+                            }
+
+                            onCurrentIndexChanged: {
+                                timelineModel.setCurrentTweetId(currentItem.tweetModel.id_str);
+                            }
+
+                            footer: ownPicturesFooterComponent;
+
+                            VerticalScrollDecorator {}
+                        }
+
+                        Component {
+                            id: ownPicturesFooterComponent
+                            Item {
+                                id: ownPicturesLoadMoreRow
+                                width: overviewPage.width
+                                height: ownPicturesLoadMoreButton.height + ( 2 * Theme.paddingLarge )
+                                Button {
+                                    id: ownPicturesLoadMoreButton
+                                    Behavior on opacity { NumberAnimation {} }
+                                    text: qsTr("Load more tweets")
+                                    preferredWidth: Theme.buttonWidthLarge
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    opacity: visible ? 1 : 0
+                                    onClicked: {
+                                        console.log("Loading more tweets for timeline");
+                                        timelineModel.loadMore();
+                                        ownPicturesLoadMoreBusyIndicator.visible = true;
+                                        ownPicturesLoadMoreButton.visible = false;
+                                    }
+                                }
+                                BusyIndicator {
+                                    id: ownPicturesLoadMoreBusyIndicator
+                                    Behavior on opacity { NumberAnimation {} }
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: false
+                                    opacity: visible ? 1 : 0
+                                    running: visible
+                                    size: BusyIndicatorSize.Medium
+                                }
+                                Connections {
+                                    target: timelineModel
+                                    onHomeTimelineUpdated: {
+                                        ownPicturesLoadMoreBusyIndicator.visible = false;
+                                        ownPicturesLoadMoreButton.visible = true;
+                                    }
+                                }
+                            }
+                        }
+
+
+                        LoadingIndicator {
+                            id: ownPicturesLoadingIndicator
+                            visible: ownPicturesView.reloading
+                            Behavior on opacity { NumberAnimation {} }
+                            opacity: ownPicturesView.reloading ? 1 : 0
+                            height: parent.height
+                            width: parent.width
+                        }
+                    }
+
+                    Item {
+                        id: ownAlbumsColumn
+                        width: viewsSlideshow.width
+                        height: viewsSlideshow.height
+
+                        property bool updateInProgress : false;
+
+//                        Connections {
+
+//                            target: mentionsModel
+//                            onUpdateMentionsFinished: {
+//                                ownAlbumsColumn.updateInProgress = false;
+//                            }
+//                            onUpdateMentionsError: {
+//                                ownAlbumsColumn.updateInProgress = false;
+//                                overviewNotification.show(errorMessage);
+//                            }
+//                        }
+
+                        SilicaListView {
+                            anchors {
+                                fill: parent
+                            }
+                            id: ownAlbumsListView
+
+                            clip: true
+
+                            model: mentionsModel
+                            delegate: Component {
+                                Loader {
+                                    width: ownAlbumsListView.width
+                                    property variant mentionsData: display
+                                    property bool isRetweet : display.retweeted_status ? (( display.retweeted_status.user.id_str === overviewPage.myUser.id_str ) ? true : false ) : false
+
+                                    sourceComponent: if (display.followed_at) {
+                                                         mentionsData.description = qsTr("follows you now!");
+                                                         return componentMentionsUser;
+                                                     } else {
+                                                         return componentMentionsTweet;
+                                                     }
+                                }
+                            }
+
+                            VerticalScrollDecorator {}
+                        }
+
+                        Column {
+                            anchors {
+                                fill: parent
+                            }
+
+                            id: ownAlbumsUpdateInProgressColumn
+                            Behavior on opacity { NumberAnimation {} }
+                            opacity: ownAlbumsColumn.updateInProgress ? 1 : 0
+                            visible: ownAlbumsColumn.updateInProgress ? true : false
+
+                            LoadingIndicator {
+                                id: ownAlbumsLoadingIndicator
+                                visible: ownAlbumsColumn.updateInProgress
+                                Behavior on opacity { NumberAnimation {} }
+                                opacity: ownAlbumsColumn.updateInProgress ? 1 : 0
+                                height: parent.height
+                                width: parent.width
+                            }
+                        }
+
+                    }
+
+                    Item {
+                        id: interestingnessColumn
+                        width: viewsSlideshow.width
+                        height: viewsSlideshow.height
+
+                        property bool updateInProgress : false;
+
+//                        Connections {
+
+//                            target: directMessagesModel
+
+//                            onUpdateMessagesStarted: {
+//                                interestingnessColumn.updateInProgress = true;
+//                            }
+
+//                            onUpdateMessagesFinished: {
+//                                interestingnessColumn.updateInProgress = false;
+//                            }
+
+//                            onUpdateMessagesError: {
+//                                interestingnessColumn.updateInProgress = false;
+//                                overviewNotification.show(errorMessage);
+//                            }
+//                        }
+
+                        SilicaListView {
+                            anchors {
+                                fill: parent
+                            }
+                            id: interestingnessListView
+
+                            clip: true
+
+                            model: directMessagesModel
+                            delegate: ListItem {
+
+                                id: messageContactItem
+
+                                contentHeight: messageContactRow.height + messageContactSeparator.height + 2 * Theme.paddingMedium
+                                contentWidth: parent.width
+
+//                                onClicked: {
+//                                    pageStack.push(Qt.resolvedUrl("../pages/ConversationPage.qml"), { "conversationModel" : display, "myUserId": overviewPage.myUser.id_str, "configuration": overviewPage.configuration });
+//                                }
+
+                            }
+
+
+                            VerticalScrollDecorator {}
+                        }
+
+                        Column {
+                            anchors {
+                                fill: parent
+                            }
+
+                            id: interestingnessUpdateInProgressColumn
+                            Behavior on opacity { NumberAnimation {} }
+                            opacity: interestingnessColumn.updateInProgress ? 1 : 0
+                            visible: interestingnessColumn.updateInProgress ? true : false
+
+                            LoadingIndicator {
+                                id: interestingnessLoadingIndicator
+                                visible: interestingnessColumn.updateInProgress
+                                Behavior on opacity { NumberAnimation {} }
+                                opacity: interestingnessColumn.updateInProgress ? 1 : 0
+                                height: parent.height
+                                width: parent.width
+                            }
+                        }
+
+                    }
+
+                    Item {
+                        id: searchColumn
+                        width: viewsSlideshow.width
+                        height: viewsSlideshow.height
+
+                        property bool tweetSearchInProgress : false;
+                        property bool usersSearchInProgress : false;
+                        property bool tweetSearchInTransition : false;
+                        property bool usersSearchInTransition : false;
+
+                        property bool usersSearchSelected : false;
+
+//                        Connections {
+//                            target: searchModel
+//                            onSearchFinished: {
+//                                searchColumn.tweetSearchInProgress = false;
+//                                searchColumn.tweetSearchInTransition = false;
+//                                resetFocus();
+//                            }
+//                            onSearchError: {
+//                                searchColumn.tweetSearchInProgress = false;
+//                                searchColumn.tweetSearchInTransition = false;
+//                                overviewNotification.show(errorMessage);
+//                                resetFocus();
+//                            }
+//                        }
+
+//                        Connections {
+//                            target: searchUsersModel
+//                            onSearchFinished: {
+//                                searchColumn.usersSearchInProgress = false;
+//                                searchColumn.usersSearchInTransition = false;
+//                                resetFocus();
+//                            }
+//                            onSearchError: {
+//                                searchColumn.usersSearchInProgress = false;
+//                                searchColumn.usersSearchInTransition = false;
+//                                overviewNotification.show(errorMessage);
+//                                resetFocus();
+//                            }
+//                        }
+
+//                        Connections {
+//                            target: savedSearchesModel
+//                            onSaveSuccessful: {
+//                                overviewNotification.show(qsTr("Search query '%1' saved successfully").arg(query));
+//                            }
+//                            onSaveError: {
+//                                overviewNotification.show(errorMessage);
+//                            }
+//                            onRemoveError: {
+//                                overviewNotification.show(errorMessage);
+//                            }
+//                        }
+
+                        Timer {
+                            id: searchTimer
+                            interval: 1500
+                            running: false
+                            repeat: false
+                            onTriggered: {
+                                searchColumn.tweetSearchInProgress = true;
+                                searchColumn.usersSearchInProgress = true;
+                                searchModel.search(searchField.text);
+                                searchUsersModel.search(searchField.text);
+                            }
+                        }
+
+                        Row {
+                            id: searchFieldRow
+                            width: parent.width
+                            height: searchField.height
+
+                            SearchField {
+                                id: searchField
+                                width: parent.width
+                                placeholderText: qsTr("Search on Flickr...")
+                                anchors {
+                                    top: parent.top
+                                }
+
+                                EnterKey.iconSource: "image://theme/icon-m-enter-close"
+                                EnterKey.onClicked: {
+                                    resetFocus();
+                                }
+
+                                onTextChanged: {
+                                    searchColumn.tweetSearchInTransition = true;
+                                    searchColumn.usersSearchInTransition = true;
+                                    searchTimer.stop();
+                                    searchTimer.start();
+                                }
+                            }
+                        }
+
+                        Row {
+                            id: searchTypeRow
+                            width: parent.width
+                            height: Theme.fontSizeLarge + Theme.paddingMedium
+                            anchors.top: searchFieldRow.bottom
+                            anchors.topMargin: Theme.paddingMedium
+                            opacity: ( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress || (searchResultsListView.count === 0 && usersSearchResultsListView.count === 0)) ? 0 : 1
+                            visible: ( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress || (searchResultsListView.count === 0 && usersSearchResultsListView.count === 0)) ? false : true
+                            Behavior on opacity { NumberAnimation {} }
+                            Text {
+                                id: searchTypeTweets
+                                width: ( parent.width / 2 )
+                                font.pixelSize: Theme.fontSizeMedium
+                                font.capitalization: Font.SmallCaps
+                                horizontalAlignment: Text.AlignHCenter
+                                color: searchColumn.usersSearchSelected ? Theme.primaryColor : Theme.highlightColor
+                                textFormat: Text.PlainText
+                                anchors.top: parent.top
+                                text: qsTr("Pictures")
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        if (searchColumn.usersSearchSelected) {
+                                            searchColumn.usersSearchSelected = false;
+                                        }
+                                    }
+                                }
+                            }
+                            Separator {
+                                width: Theme.fontSizeMedium
+                                color: Theme.primaryColor
+                                horizontalAlignment: Qt.AlignHCenter
+                                anchors.top: parent.top
+                                anchors.topMargin: Theme.paddingSmall
+                                transform: Rotation { angle: 90 }
+                            }
+                            Text {
+                                id: searchTypeUsers
+                                width: ( parent.width / 2 ) - ( 2 * Theme.fontSizeMedium )
+                                font.pixelSize: Theme.fontSizeMedium
+                                font.capitalization: Font.SmallCaps
+                                horizontalAlignment: Text.AlignHCenter
+                                color: searchColumn.usersSearchSelected ? Theme.highlightColor : Theme.primaryColor
+                                textFormat: Text.PlainText
+                                anchors.top: parent.top
+                                text: qsTr("Users")
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        if (!searchColumn.usersSearchSelected) {
+                                            searchColumn.usersSearchSelected = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        SilicaListView {
+                            anchors {
+                                top: searchTypeRow.bottom
+                            }
+                            id: searchResultsListView
+                            width: parent.width
+                            height: parent.height - searchField.height - searchTypeRow.height - Theme.paddingMedium
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            opacity: ( !searchColumn.tweetSearchInProgress && !searchColumn.usersSearchSelected ) ? 1 : 0
+                            visible: ( !searchColumn.tweetSearchInProgress && !searchColumn.usersSearchSelected ) ? true : false
+                            Behavior on opacity { NumberAnimation {} }
+
+                            clip: true
+
+                            model: searchModel
+                            delegate: Tweet {
+                                tweetModel: display
+                                userId: overviewPage.myUser.id_str
+                            }
+                            VerticalScrollDecorator {}
+                        }
+
+                        SilicaListView {
+                            anchors {
+                                top: searchTypeRow.bottom
+                            }
+                            id: usersSearchResultsListView
+                            width: parent.width
+                            height: parent.height - searchField.height - searchTypeRow.height - Theme.paddingMedium
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            opacity: ( !searchColumn.usersSearchInProgress && searchColumn.usersSearchSelected ) ? 1 : 0
+                            visible: ( !searchColumn.usersSearchInProgress && searchColumn.usersSearchSelected ) ? true : false
+                            Behavior on opacity { NumberAnimation {} }
+
+                            clip: true
+
+                            model: searchUsersModel
+                            delegate: User {
+                                userModel: display
+                            }
+                            VerticalScrollDecorator {}
+                        }
+
+                        Column {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                            }
+                            width: parent.width
+
+                            id: searchInProgressColumn
+                            Behavior on opacity { NumberAnimation {} }
+                            opacity: ( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress ) ? 1 : 0
+                            visible: ( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress ) ? true : false
+
+                            BusyIndicator {
+                                id: searchInProgressIndicator
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                running: ( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress )
+                                size: BusyIndicatorSize.Medium
+                            }
+
+                            InfoLabel {
+                                id: searchInProgressIndicatorLabel
+                                text: qsTr("Searching...")
+                                font.pixelSize: Theme.fontSizeLarge
+                                width: parent.width - 2 * Theme.horizontalPageMargin
+                            }
+                        }
+
+                        Column {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                            }
+                            width: parent.width
+
+                            id: searchNoResultsColumn
+                            Behavior on opacity { NumberAnimation {} }
+                            opacity: ( ((!searchColumn.usersSearchSelected && searchResultsListView.count === 0) || (searchColumn.usersSearchSelected && usersSearchResultsListView.count === 0)) && !( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress ) && searchField.text !== "" ) ? 1 : 0
+                            visible: ( ((!searchColumn.usersSearchSelected && searchResultsListView.count === 0) || (searchColumn.usersSearchSelected && usersSearchResultsListView.count === 0)) && !( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress ) && searchField.text !== "" ) ? true : false
+
+                            Connections {
+                                target: accountModel
+                                onImageStyleChanged: {
+                                    searchNoResultsImage.source = "../../images/fernweh.png";
+                                }
+                            }
+
+                            Image {
+                                id: searchNoResultsImage
+                                source: "../../images/fernweh.png"
+                                anchors {
+                                    horizontalCenter: parent.horizontalCenter
+                                }
+
+                                fillMode: Image.PreserveAspectFit
+                                width: 1/3 * parent.width
+                            }
+
+                            InfoLabel {
+                                id: searchNoResultsText
+                                text: ( searchField.text === "" || searchColumn.tweetSearchInTransition || searchColumn.usersSearchInTransition ) ? qsTr("What are you looking for?") : qsTr("No results found")
+                                color: Theme.primaryColor
+                                font.pixelSize: Theme.fontSizeLarge
+                                width: parent.width - 2 * Theme.horizontalPageMargin
+                            }
+                        }
+
+                    }
+
+                    Item {
+                        id: profileView
+                        width: viewsSlideshow.width
+                        height: viewsSlideshow.height
+
+                        Loader {
+                            id: profileLoader
+                            active: false
+                            width: parent.width
+                            height: parent.height
+                            sourceComponent: profileComponent
+                        }
+
+                        Component {
+                            id: profileComponent
+
+                            Item {
+                                id: profileContent
+                                anchors.fill: parent
+                                Component.onCompleted: {
+                                    overviewPage.profileEntity = ownProfile;
+                                }
+
+                                Profile {
+                                    id: ownProfile
+                                    profileModel: accountModel.getCurrentAccount()
+
+                                    Connections {
+                                        target: accountModel
+                                        onCredentialsVerified: {
+                                            console.log("Updating profile page...");
+                                            ownProfile.profileModel = accountModel.getCurrentAccount();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+
+                Timer {
+                    id: slideshowVisibleTimer
+                    property int tabId: 0
+                    interval: 50
+                    repeat: false
+                    onTriggered: {
+                        viewsSlideshow.positionViewAtIndex(tabId, PathView.SnapPosition);
+                        viewsSlideshow.opacity = 1;
+                    }
+                    function goToTab(newTabId) {
+                        tabId = newTabId;
+                        start();
+                    }
+                }
+
+                Connections {
+                    target: accountModel
+                    onSwipeNavigationChanged: {
+                        viewsSlideshow.interactive = accountModel.getUseSwipeNavigation()
+                    }
+                }
+
+                SlideshowView {
+                    id: viewsSlideshow
+                    width: parent.width - ( overviewPage.isLandscape ? getNavigationRowSize() + ( 2 * Theme.horizontalPageMargin ) : 0 )
+                    height: parent.height
+                    itemWidth: width
+                    clip: true
+                    interactive: accountModel.getUseSwipeNavigation()
+                    model: viewsModel
+                    onCurrentIndexChanged: {
+                        openTab(currentIndex);
+                    }
+                    Behavior on opacity { NumberAnimation {} }
+                    onOpacityChanged: {
+                        if (opacity === 0) {
+                            slideshowVisibleTimer.start();
+                        }
+                    }
+                }
+
+                Item {
+                    id: navigationColumn
+                    width: overviewPage.isLandscape ? getNavigationRowSize() + ( 2 * Theme.horizontalPageMargin ) : 0
+                    height: parent.height
+                    visible: overviewPage.isLandscape
+                    property bool squeezed: height < ( ( Theme.iconSizeMedium + Theme.fontSizeTiny ) * 6 ) ? true : false
+
+                    Separator {
+                        id: navigatorColumnSeparator
+                        width: parent.height
+                        color: Theme.primaryColor
+                        horizontalAlignment: Qt.AlignHCenter
+                        anchors.top: parent.top
+                        anchors.topMargin: Theme.paddingSmall
+                        transform: Rotation { angle: 90 }
+                    }
+
+                    Column {
+
+                        anchors.left: parent.left
+                        anchors.leftMargin: Theme.paddingSmall
+                        anchors.top: parent.top
+
+                        height: parent.height
+                        width: parent.width
+
+                        Item {
+                            id: homeButtonColumnLandscape
+                            height: parent.height / 5
+                            width: parent.width - Theme.paddingMedium
+                            OwnPicturesButton {
+                                id: ownPicturesButtonLandscape
+                                visible: (isActive || !navigationColumn.squeezed)
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        Item {
+                            id: ownAlbumsButtonColumnLandscape
+                            height: parent.height / 5
+                            width: parent.width - Theme.paddingMedium
+                            OwnPicturesButton {
+                                id: ownAlbumsButtonLandscape
+                                visible: (isActive || !navigationColumn.squeezed)
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+                        Item {
+                            id: interestingnessButtonColumnLandscape
+                            height: parent.height / 5
+                            width: parent.width - Theme.paddingMedium
+                            TrendingButton {
+                                id: interestingnessButtonLandscape
+                                visible: (isActive || !navigationColumn.squeezed)
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+                        Item {
+                            id: searchButtonColumnLandscape
+                            height: parent.height / 5
+                            width: parent.width - Theme.paddingMedium
+                            SearchButton {
+                                id: searchButtonLandscape
+                                visible: (isActive || !navigationColumn.squeezed)
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                        Item {
+                            id: profileButtonColumnLandscape
+                            height: parent.height / 5
+                            width: parent.width - Theme.paddingMedium
+                            ProfileButton {
+                                id: profileButtonLandscape
+                                visible: (isActive || !navigationColumn.squeezed)
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
+
+                    }
+
+                }
+
             }
+
+            Column {
+                id: navigationRow
+                width: parent.width
+                height: overviewPage.isPortrait ? getNavigationRowSize() : 0
+                visible: overviewPage.isPortrait
+                Column {
+                    id: navigationRowSeparatorColumn
+                    width: parent.width
+                    height: Theme.paddingMedium
+                    Separator {
+                        id: navigationRowSeparator
+                        width: parent.width
+                        color: Theme.primaryColor
+                        horizontalAlignment: Qt.AlignHCenter
+                    }
+                }
+
+                Row {
+                    y: Theme.paddingSmall
+                    width: parent.width
+                    Item {
+                        id: homeButtonColumn
+                        width: parent.width / 5
+                        height: parent.height - Theme.paddingMedium
+                        OwnPicturesButton {
+                            id: ownPicturesButtonPortrait
+                            anchors.top: parent.top
+                        }
+                    }
+
+                    Item {
+                        id: ownAlbumsButtonColumn
+                        width: parent.width / 5
+                        height: parent.height - navigationRowSeparator.height
+                        OwnAlbumsButton {
+                            id: ownAlbumsButtonPortrait
+                            anchors.top: parent.top
+                        }
+                    }
+                    Item {
+                        id: interestingnessButtonColumn
+                        width: parent.width / 5
+                        height: parent.height - navigationRowSeparator.height
+                        TrendingButton {
+                            id: interestingnessButtonPortrait
+                            anchors.top: parent.top
+                        }
+                    }
+                    Item {
+                        id: searchButtonColumn
+                        width: parent.width / 5
+                        height: parent.height - navigationRowSeparator.height
+                        SearchButton {
+                            id: searchButtonPortrait
+                            anchors.top: parent.top
+                        }
+                    }
+
+                    Item {
+                        id: profileButtonColumn
+                        width: parent.width / 5
+                        height: parent.height - navigationRowSeparator.height
+                        ProfileButton {
+                            id: profileButtonPortrait
+                            anchors.top: parent.top
+                        }
+                    }
+                }
+            }
+
+
         }
+
     }
+
+
+
 }
