@@ -53,13 +53,6 @@
     </message>
 </context>
 <context>
-    <name>HomeTimelineButton</name>
-    <message>
-        <source>Timeline</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ImageProgressIndicator</name>
     <message>
         <source>%1 %</source>
@@ -75,13 +68,6 @@
     </message>
 </context>
 <context>
-    <name>ListsButton</name>
-    <message>
-        <source>Lists</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>LoadingIndicator</name>
     <message>
         <source>Loading...</source>
@@ -89,27 +75,9 @@
     </message>
 </context>
 <context>
-    <name>MessagesButton</name>
-    <message>
-        <source>Messages</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>NotificationsButton</name>
-    <message>
-        <source>Notifications</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>OverviewPage</name>
     <message>
         <source>About Fernweh</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Fernweh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -126,6 +94,60 @@
     </message>
     <message>
         <source>Authenticate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Loading own pictures...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load more tweets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>follows you now!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Search on Flickr...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Pictures</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Users</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Searching...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>What are you looking for?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No results found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OwnAlbumsButton</name>
+    <message>
+        <source>Albums</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>OwnPicturesButton</name>
+    <message>
+        <source>Pictures</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -174,66 +196,56 @@
     </message>
 </context>
 <context>
-    <name>Tweet</name>
+    <name>SettingsPage</name>
     <message>
-        <source>Deleting tweet</source>
+        <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Delete Tweet</source>
+        <source>Style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Reply to Tweet</source>
+        <source>Enable swipe navigation</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Retweet with Comment</source>
+        <source>Use swipe navigation to switch categories (e.g. from pictures to albums)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open in Browser</source>
+        <source>Font Size</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Copy URL to Clipboard</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>TweetElement</name>
-    <message>
-        <source>Retweeted by %1</source>
+        <source>Choose the font size here</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>In reply to %1</source>
+        <source>Normal (Fernweh default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Tweet to %1</source>
+        <source>Large (Sailfish OS default)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Tweeted with %1</source>
+        <source>Behavior</source>
         <translation type="unfinished"></translation>
     </message>
-</context>
-<context>
-    <name>TweetUser</name>
     <message>
-        <source>@%1</source>
+        <source>Open-with menu integration</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Integrate Fernweh into open-with menu of Sailfish OS</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
-    <name>TwitterList</name>
+    <name>TrendingButton</name>
     <message>
-        <source>&lt;b&gt;%1&lt;/b&gt; by %2</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1 members</source>
+        <source>Trending</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -284,6 +296,49 @@
     </message>
     <message>
         <source>Sign up for Flickr</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>functions</name>
+    <message>
+        <source>@%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>#%1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1M</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1K</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the next %1 days</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the next day</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the next %1 hours</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the next hour</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the next %1 minutes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>the next minute</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

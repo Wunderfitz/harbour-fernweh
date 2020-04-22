@@ -140,10 +140,10 @@ ListItem {
 
                 spacing: Theme.paddingSmall
 
-                TweetUser {
-                    id: tweetUserRow
-                    tweetUser: userModel
-                }
+//                TweetUser {
+//                    id: tweetUserRow
+//                    tweetUser: userModel
+//                }
 
                 Text {
                     id: userDescriptionText

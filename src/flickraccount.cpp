@@ -7,10 +7,15 @@
 #include "o0settingsstore.h"
 #include "o1flickrglobals.h"
 
+const char SETTINGS_USE_SWIPE_NAVIGATION[] = "settings/useSwipeNavigation";
+const char SETTINGS_USE_OPEN_WITH[] = "settings/useOpenWith";
+const char SETTINGS_FONT_SIZE[] = "settings/fontSize";
+
 FlickrAccount::FlickrAccount(QObject *parent) : QObject(parent),
                                                 networkConfigurationManager(new QNetworkConfigurationManager(this)),
                                                 o1(new O1Flickr(this)),                                                
-                                                manager(new QNetworkAccessManager(this))
+                                                manager(new QNetworkAccessManager(this)),
+                                                settings("harbour-fernweh", "settings")
 {
     qDebug() << "[FlickrAccount] Initializing account handler...";
     obtainEncryptionKey();
@@ -107,6 +112,38 @@ void FlickrAccount::enterPin(const QString &pin)
 bool FlickrAccount::isLinked()
 {
     return o1->linked();
+}
+
+bool FlickrAccount::getUseSwipeNavigation()
+{
+    return settings.value(SETTINGS_USE_SWIPE_NAVIGATION, true).toBool();
+}
+
+void FlickrAccount::setUseSwipeNavigation(const bool &useSwipeNavigation)
+{
+    settings.setValue(SETTINGS_USE_SWIPE_NAVIGATION, useSwipeNavigation);
+    emit swipeNavigationChanged();
+}
+
+bool FlickrAccount::getUseOpenWith()
+{
+    return settings.value(SETTINGS_USE_OPEN_WITH, true).toBool();
+}
+
+void FlickrAccount::setUseOpenWith(const bool &useOpenWith)
+{
+    settings.setValue(SETTINGS_USE_OPEN_WITH, useOpenWith);
+}
+
+QString FlickrAccount::getFontSize()
+{
+    return settings.value(SETTINGS_FONT_SIZE, "fernweh").toString();
+}
+
+void FlickrAccount::setFontSize(const QString &fontSize)
+{
+    settings.setValue(SETTINGS_FONT_SIZE, fontSize);
+    emit fontSizeChanged(fontSize);
 }
 
 FlickrApi *FlickrAccount::getFlickrApi()

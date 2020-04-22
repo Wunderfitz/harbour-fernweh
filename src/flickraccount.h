@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QNetworkConfigurationManager>
 #include <QNetworkAccessManager>
+#include <QSettings>
 
 #include "o1flickr.h"
 #include "o1requestor.h"
@@ -18,6 +19,12 @@ public:
     Q_INVOKABLE void obtainPinUrl();
     Q_INVOKABLE void enterPin(const QString &pin);
     Q_INVOKABLE bool isLinked();
+    Q_INVOKABLE bool getUseSwipeNavigation();
+    Q_INVOKABLE void setUseSwipeNavigation(const bool &useSwipeNavigation);
+    Q_INVOKABLE bool getUseOpenWith();
+    Q_INVOKABLE void setUseOpenWith(const bool &useOpenWith);
+    Q_INVOKABLE QString getFontSize();
+    Q_INVOKABLE void setFontSize(const QString &fontSize);
 
     FlickrApi *getFlickrApi();
 
@@ -26,6 +33,8 @@ signals:
     void pinRequestSuccessful(const QString &url);
     void linkingFailed(const QString &errorMessage);
     void linkingSuccessful();
+    void swipeNavigationChanged();
+    void fontSizeChanged(const QString &fontSize);
 
 public slots:
     void handlePinRequestError(const QString &errorMessage);
@@ -40,6 +49,7 @@ private:
     QNetworkAccessManager * const manager;
     O1Requestor *requestor;
     FlickrApi *flickrApi;
+    QSettings settings;
 
     void obtainEncryptionKey();
     void initializeEnvironment();

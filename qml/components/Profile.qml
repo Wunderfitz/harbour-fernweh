@@ -362,9 +362,9 @@ Item {
         clip: true
 
         model: profileTimeline
-        delegate: Tweet {
-            tweetModel: modelData
-        }
+//        delegate: Tweet {
+//            tweetModel: modelData
+//        }
         VerticalScrollDecorator {}
     }
 

@@ -69,7 +69,7 @@ Page {
         }
     }
 
-    function handleNotificationsClicked() {
+    function handleOwnAlbumsClicked() {
         if (overviewPage.activeTabId === 1) {
             ownAlbumsListView.scrollToTop();
         } else {
@@ -79,7 +79,7 @@ Page {
         }
     }
 
-    function handleMessagesClicked() {
+    function handleTrendingClicked() {
         viewsSlideshow.opacity = 0;
         slideshowVisibleTimer.goToTab(2);
         openTab(2);
@@ -96,19 +96,13 @@ Page {
         }
     }
 
-    function handleListsClicked() {
-        viewsSlideshow.opacity = 0;
-        slideshowVisibleTimer.goToTab(4);
-        openTab(4);
-    }
-
     function handleProfileClicked() {
-        if (overviewPage.activeTabId === 5) {
+        if (overviewPage.activeTabId === 4) {
             profileEntity.scrollToTop();
         } else {
             viewsSlideshow.opacity = 0;
-            slideshowVisibleTimer.goToTab(5);
-            openTab(5);
+            slideshowVisibleTimer.goToTab(4);
+            openTab(4);
         }
     }
 
@@ -126,8 +120,6 @@ Page {
             interestingnessButtonLandscape.isActive = false;
             searchButtonPortrait.isActive = false;
             searchButtonLandscape.isActive = false;
-            listsButtonPortrait.isActive = false;
-            listsButtonLandscape.isActive = false;
             profileButtonPortrait.isActive = false;
             profileButtonLandscape.isActive = false;
             break;
@@ -140,8 +132,6 @@ Page {
             interestingnessButtonLandscape.isActive = false;
             searchButtonPortrait.isActive = false;
             searchButtonLandscape.isActive = false;
-            listsButtonPortrait.isActive = false;
-            listsButtonLandscape.isActive = false;
             profileButtonPortrait.isActive = false;
             profileButtonLandscape.isActive = false;
             break;
@@ -154,8 +144,6 @@ Page {
             interestingnessButtonLandscape.isActive = true;
             searchButtonPortrait.isActive = false;
             searchButtonLandscape.isActive = false;
-            listsButtonPortrait.isActive = false;
-            listsButtonLandscape.isActive = false;
             profileButtonPortrait.isActive = false;
             profileButtonLandscape.isActive = false;
             break;
@@ -168,8 +156,6 @@ Page {
             interestingnessButtonLandscape.isActive = false;
             searchButtonPortrait.isActive = true;
             searchButtonLandscape.isActive = true;
-            listsButtonPortrait.isActive = false;
-            listsButtonLandscape.isActive = false;
             profileButtonPortrait.isActive = false;
             profileButtonLandscape.isActive = false;
             break;
@@ -182,10 +168,8 @@ Page {
             interestingnessButtonLandscape.isActive = false;
             searchButtonPortrait.isActive = false;
             searchButtonLandscape.isActive = false;
-            listsButtonPortrait.isActive = true;
-            listsButtonLandscape.isActive = true;
-            profileButtonPortrait.isActive = false;
-            profileButtonLandscape.isActive = false;
+            profileButtonPortrait.isActive = true;
+            profileButtonLandscape.isActive = true;
             break;
         default:
             console.log("Some strange navigation happened!")
@@ -197,9 +181,13 @@ Page {
         onTestLoginSuccessful: {
             if (!overviewPage.initializationCompleted) {
                 hideAccountVerificationColumn();
-                overviewContainer.visible = true;
                 overviewPage.initializationCompleted = true;
                 console.log("Successfully authenticated user " + result.user.username._content);
+                overviewContainer.visible = true;
+                overviewColumn.visible = true;
+                overviewColumn.opacity = 1;
+                openTab(0);
+
             }
         }
         onTestLoginError: {
@@ -293,8 +281,8 @@ Page {
             }
             onClicked: {
                 verificationFailedColumn.visible = false;
-                showAccountVerificationColumn()
-                accountModel.verifyCredentials()
+                showAccountVerificationColumn();
+                flickrApi.testLogin();
             }
         }
 
@@ -322,11 +310,13 @@ Page {
         contentWidth: parent.width
 
         PullDownMenu {
-            PullDownMenu {
-                MenuItem {
-                    text: qsTr("About Fernweh")
-                    onClicked: pageStack.push(Qt.resolvedUrl("../pages/AboutPage.qml"))
-                }
+            MenuItem {
+                text: qsTr("About Fernweh")
+                onClicked: pageStack.push(Qt.resolvedUrl("../pages/AboutPage.qml"))
+            }
+            MenuItem {
+                text: qsTr("Settings")
+                onClicked: pageStack.push(Qt.resolvedUrl("../pages/SettingsPage.qml"))
             }
         }
 
@@ -339,6 +329,10 @@ Page {
         Component {
             id: pushUpMenuComponent
             PushUpMenu {
+                MenuItem {
+                    text: qsTr("Settings")
+                    onClicked: pageStack.push(Qt.resolvedUrl("../pages/SettingsPage.qml"))
+                }
                 MenuItem {
                     text: qsTr("About Fernweh")
                     onClicked: pageStack.push(Qt.resolvedUrl("../pages/AboutPage.qml"))
@@ -429,11 +423,11 @@ Page {
 
                             model: timelineModel
 
-                            delegate: Tweet {
-                                id: homeTimelineTweet
-                                tweetModel: display
-                                userId: overviewPage.myUser.id_str
-                            }
+//                            delegate: Tweet {
+//                                id: homeTimelineTweet
+//                                tweetModel: display
+//                                userId: overviewPage.myUser.id_str
+//                            }
 
                             onMovementEnded: {
                                 timelineModel.setCurrentTweetId(ownPicturesListView.itemAt(ownPicturesListView.contentX, ( ownPicturesListView.contentY + Math.round(overviewPage.height / 2))).tweetModel.id_str);
@@ -814,10 +808,10 @@ Page {
                             clip: true
 
                             model: searchModel
-                            delegate: Tweet {
-                                tweetModel: display
-                                userId: overviewPage.myUser.id_str
-                            }
+//                            delegate: Tweet {
+//                                tweetModel: display
+//                                userId: overviewPage.myUser.id_str
+//                            }
                             VerticalScrollDecorator {}
                         }
 
@@ -878,13 +872,6 @@ Page {
                             Behavior on opacity { NumberAnimation {} }
                             opacity: ( ((!searchColumn.usersSearchSelected && searchResultsListView.count === 0) || (searchColumn.usersSearchSelected && usersSearchResultsListView.count === 0)) && !( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress ) && searchField.text !== "" ) ? 1 : 0
                             visible: ( ((!searchColumn.usersSearchSelected && searchResultsListView.count === 0) || (searchColumn.usersSearchSelected && usersSearchResultsListView.count === 0)) && !( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress ) && searchField.text !== "" ) ? true : false
-
-                            Connections {
-                                target: accountModel
-                                onImageStyleChanged: {
-                                    searchNoResultsImage.source = "../../images/fernweh.png";
-                                }
-                            }
 
                             Image {
                                 id: searchNoResultsImage
@@ -965,9 +952,9 @@ Page {
                 }
 
                 Connections {
-                    target: accountModel
+                    target: flickrAccount
                     onSwipeNavigationChanged: {
-                        viewsSlideshow.interactive = accountModel.getUseSwipeNavigation()
+                        viewsSlideshow.interactive = flickrAccount.getUseSwipeNavigation();
                     }
                 }
 
@@ -977,7 +964,7 @@ Page {
                     height: parent.height
                     itemWidth: width
                     clip: true
-                    interactive: accountModel.getUseSwipeNavigation()
+                    interactive: flickrAccount.getUseSwipeNavigation()
                     model: viewsModel
                     onCurrentIndexChanged: {
                         openTab(currentIndex);

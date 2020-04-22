@@ -25,6 +25,7 @@ SOURCES += src/harbour-fernweh.cpp \
 DISTFILES += qml/harbour-fernweh.qml \
     qml/pages/*.qml \
     qml/components/*.qml \
+    qml/pages/SettingsPage.qml \
     rpm/harbour-fernweh.changes.in \
     rpm/harbour-fernweh.spec \
     rpm/harbour-fernweh.yaml \

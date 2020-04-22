@@ -94,14 +94,14 @@ Item {
                 Behavior on opacity { NumberAnimation {} }
             }
 
-            Component {
-                id: singleImageComponent
-                ImagePage {
-                    imageUrl: Functions.findHiResImage(profileModel.profile_image_url_https)
-                    imageHeight: appWindow.width > appWindow.height ? appWindow.height : appWindow.width
-                    imageWidth: appWindow.width > appWindow.height ? appWindow.height : appWindow.width
-                }
-            }
+//            Component {
+//                id: singleImageComponent
+//                ImagePage {
+//                    imageUrl: Functions.findHiResImage(profileModel.profile_image_url_https)
+//                    imageHeight: appWindow.width > appWindow.height ? appWindow.height : appWindow.width
+//                    imageWidth: appWindow.width > appWindow.height ? appWindow.height : appWindow.width
+//                }
+//            }
 
             Image {
                 id: profilePicture
@@ -136,7 +136,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        pageStack.push( singleImageComponent );
+//                        pageStack.push( singleImageComponent );
                     }
                 }
             }
