@@ -39,14 +39,19 @@ public:
     explicit FlickrApi(O1Requestor* requestor, QNetworkAccessManager *manager, QObject *parent = nullptr);
 
     Q_INVOKABLE void testLogin();
+    Q_INVOKABLE void peopleGetInfo(const QString &userId);
 
 signals:
     void testLoginSuccessful(const QVariantMap &result);
     void testLoginError(const QString &errorMessage);
+    void peopleGetInfoSuccessful(const QString userId, const QVariantMap &result);
+    void peopleGetInfoError(const QString userId, const QString &errorMessage);
 
 public slots:
     void handleTestLoginSuccessful();
     void handleTestLoginError(QNetworkReply::NetworkError error);
+    void handlePeopleGetInfoSuccessful();
+    void handlePeopleGetInfoError(QNetworkReply::NetworkError error);
 
 private:
     O1Requestor *requestor;

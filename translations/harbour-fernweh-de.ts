@@ -136,6 +136,10 @@
         <source>Settings</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Loading profile...</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OwnAlbumsButton</name>

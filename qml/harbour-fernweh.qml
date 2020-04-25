@@ -22,6 +22,7 @@ import "pages"
 
 ApplicationWindow
 {
+    id: appWindow
 
     Component {
         id: welcomePage

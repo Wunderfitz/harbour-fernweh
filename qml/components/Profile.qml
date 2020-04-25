@@ -57,12 +57,11 @@ Item {
     property string iconFontSize: ( accountModel.getFontSize() === "fernweh" ? Theme.fontSizeSmall : Theme.fontSizeMedium) ;
 
     Component.onCompleted: {
-        console.log("Profile Model called for " + profileModel.id_str + ": " + profileModel.screen_name);
-        twitterApi.userTimeline(profileModel.screen_name);
+        console.log("Profile component initialized for " + profileModel.person.id + ": " + profileModel.person.realname._content);
+        //twitterApi.userTimeline(profileModel.screen_name);
     }
 
     onProfileModelChanged: {
-        //profileHeader.profileModel = profileItem.profileModel;
         profileTimeline = null;
         twitterApi.userTimeline(profileModel.screen_name);
     }
@@ -72,7 +71,7 @@ Item {
     }
 
     Connections {
-        target: accountModel
+        target: flickrAccount
         onFontSizeChanged: {
             if (fontSize === "fernweh") {
                 componentFontSize = Theme.fontSizeExtraSmall;
@@ -84,21 +83,21 @@ Item {
         }
     }
 
-    Connections {
-        target: twitterApi
-        onUserTimelineSuccessful: {
-            if (!profileTimeline) {
-                console.log("Timeline updated for user " + profileModel.screen_name)
-                profileTimeline = result;
-            }
-        }
-        onUserTimelineError: {
-            if (!profileTimeline) {
-                loadingError = true;
-                notification.show(errorMessage);
-            }
-        }
-    }
+//    Connections {
+//        target: twitterApi
+//        onUserTimelineSuccessful: {
+//            if (!profileTimeline) {
+//                console.log("Timeline updated for user " + profileModel.screen_name)
+//                profileTimeline = result;
+//            }
+//        }
+//        onUserTimelineError: {
+//            if (!profileTimeline) {
+//                loadingError = true;
+//                notification.show(errorMessage);
+//            }
+//        }
+//    }
 
     Component {
         id: profileListHeaderComponent

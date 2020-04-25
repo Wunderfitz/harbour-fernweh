@@ -30,7 +30,7 @@ Item {
     height: ((profilePictureColumn.y + profilePictureColumn.height) > (profileOverviewColumn.y + profileOverviewColumn.height) ? (profilePictureColumn.y + profilePictureColumn.height) : (profileOverviewColumn.y + profileOverviewColumn.height)) + Theme.paddingSmall
 
     Connections {
-        target: accountModel
+        target: flickrAccount
         onFontSizeChanged: {
             if (fontSize === "fernweh") {
                 profileNameText.font.pixelSize = Theme.fontSizeMedium;
@@ -46,23 +46,18 @@ Item {
         id: profileBackgroundItem
         width: parent.width
         height: appWindow.height / 8
-        Rectangle {
-            id: profileBackgroundColor
-            color: "#" + profileModel.profile_link_color
-            anchors.fill: parent
-        }
         Component {
             id: profileBannerComponent
             Image {
                 id: profileBackgroundImage
-                source: profileModel.profile_banner_url
+                source: Functions.getProfileBackgroundUrl(profileModel.person)
                 fillMode: Image.PreserveAspectCrop
             }
         }
 
         Loader {
             id: profileBannerLoader
-            active: profileModel.profile_banner_url ? true : false
+            active: profileModel.person.nsid ? true : false
             sourceComponent: profileBannerComponent
             anchors.fill: parent
         }
@@ -80,32 +75,10 @@ Item {
             id: profilePictureItem
             width: parent.width
             height: parent.height
-            Rectangle {
-                id: profilePictureBackground
-                width: parent.width
-                height: parent.height
-                color: Theme.primaryColor
-                radius: parent.width / 6
-                anchors {
-                    margins: Theme.horizontalPageMargin
-                }
-                visible: profilePicture.status === Image.Ready ? true : false
-                opacity: profilePicture.status === Image.Ready ? 1 : 0
-                Behavior on opacity { NumberAnimation {} }
-            }
-
-//            Component {
-//                id: singleImageComponent
-//                ImagePage {
-//                    imageUrl: Functions.findHiResImage(profileModel.profile_image_url_https)
-//                    imageHeight: appWindow.width > appWindow.height ? appWindow.height : appWindow.width
-//                    imageWidth: appWindow.width > appWindow.height ? appWindow.height : appWindow.width
-//                }
-//            }
 
             Image {
                 id: profilePicture
-                source: Functions.findHiResImage(profileModel.profile_image_url_https)
+                source: Functions.getProfileImageUrl(profileModel.person)
                 width: parent.width - parent.width / 10
                 height: parent.height - parent.height / 10
                 fillMode: Image.PreserveAspectCrop
@@ -119,7 +92,7 @@ Item {
                 width: parent.width - parent.width / 10
                 height: parent.height - parent.height / 10
                 color: Theme.primaryColor
-                radius: parent.width / 7
+                radius: (parent.width - parent.width / 10) / 2
                 anchors.margins: Theme.horizontalPageMargin + parent.width / 60
                 anchors.centerIn: profilePictureBackground
                 visible: false

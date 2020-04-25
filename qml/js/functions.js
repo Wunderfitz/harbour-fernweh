@@ -16,6 +16,21 @@
     You should have received a copy of the GNU General Public License
     along with Fernweh. If not, see <http://www.gnu.org/licenses/>.
 */
+
+function getProfileBackgroundUrl(userInformation) {
+    var profileBackgroundUrl = "https://farm" + userInformation.iconfarm + ".staticflickr.com/" + userInformation.iconserver + "/coverphoto/" + userInformation.nsid + ".jpg";
+    console.log("Using background image URL " + profileBackgroundUrl);
+    return profileBackgroundUrl;
+}
+
+function getProfileImageUrl(userInformation) {
+    var profileImageUrl = "https://farm" + userInformation.iconfarm + ".staticflickr.com/" + userInformation.iconserver + "/buddyicons/" + userInformation.nsid + "_r.jpg";
+    console.log("Using profile image URL " + profileImageUrl);
+    return profileImageUrl;
+}
+
+// =============== TWITTER STUFF BEGINS HERE=======================
+
 function updateFernweh() {
     if (typeof homeView !== "undefined") {
         homeView.reloading = true;

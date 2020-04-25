@@ -45,6 +45,29 @@ void FlickrApi::testLogin()
     connect(reply, SIGNAL(finished()), this, SLOT(handleTestLoginSuccessful()));
 }
 
+void FlickrApi::peopleGetInfo(const QString &userId)
+{
+    qDebug() << "FlickrApi::peopleGetInfo" << userId;
+    QUrl url = QUrl(API_BASE_URL);
+    QUrlQuery urlQuery = QUrlQuery();
+    urlQuery.addQueryItem("method", "flickr.people.getInfo");
+    urlQuery.addQueryItem("user_id", userId);
+    urlQuery.addQueryItem("format", "json");
+    urlQuery.addQueryItem("nojsoncallback", "1");
+    url.setQuery(urlQuery);
+    QNetworkRequest request(url);
+
+    QList<O0RequestParameter> requestParameters = QList<O0RequestParameter>();
+    requestParameters.append(O0RequestParameter(QByteArray("method"), QByteArray("flickr.people.getInfo")));
+    requestParameters.append(O0RequestParameter(QByteArray("user_id"), userId.toUtf8()));
+    requestParameters.append(O0RequestParameter(QByteArray("format"), QByteArray("json")));
+    requestParameters.append(O0RequestParameter(QByteArray("nojsoncallback"), QByteArray("1")));
+    QNetworkReply *reply = requestor->get(request, requestParameters);
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handlePeopleGetInfoError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(finished()), this, SLOT(handlePeopleGetInfoSuccessful()));
+}
+
 void FlickrApi::handleTestLoginSuccessful()
 {
     qDebug() << "FlickrApi::handleTestLoginSuccessful";
@@ -67,4 +90,34 @@ void FlickrApi::handleTestLoginError(QNetworkReply::NetworkError error)
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     qWarning() << "FlickrApi::handleTestLoginError:" << (int)error << reply->errorString();
     emit testLoginError(reply->errorString());
+}
+
+void FlickrApi::handlePeopleGetInfoSuccessful()
+{
+    qDebug() << "FlickrApi::handlePeopleGetInfoSuccessful";
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
+    if (reply->error() != QNetworkReply::NoError) {
+        return;
+    }
+
+    QString urlQueryRaw = reply->request().url().query();
+    QUrlQuery urlQuery(urlQueryRaw);
+
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+    qDebug().noquote() << jsonDocument.toJson();
+    if (jsonDocument.isObject()) {
+        emit peopleGetInfoSuccessful(urlQuery.queryItemValue("user_id"), jsonDocument.object().toVariantMap());
+    } else {
+        emit peopleGetInfoError(urlQuery.queryItemValue("user_id"), "Fernweh couldn't understand Flickr's response!");
+    }
+}
+
+void FlickrApi::handlePeopleGetInfoError(QNetworkReply::NetworkError error)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    qWarning() << "FlickrApi::handlePeopleGetInfoError:" << (int)error << reply->errorString();
+    QString urlQueryRaw = reply->request().url().query();
+    QUrlQuery urlQuery(urlQueryRaw);
+    emit peopleGetInfoError(urlQuery.queryItemValue("user_id"), reply->errorString());
 }

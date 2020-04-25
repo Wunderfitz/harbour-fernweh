@@ -32,6 +32,8 @@ Page {
 
     property bool initializationCompleted : false;
     property int activeTabId: 0;
+    property variant myLoginData;
+    property variant myUser;
     property variant profileEntity;
 
     Component.onCompleted: {
@@ -180,6 +182,7 @@ Page {
         target: flickrApi
         onTestLoginSuccessful: {
             if (!overviewPage.initializationCompleted) {
+                overviewPage.myLoginData = result;
                 hideAccountVerificationColumn();
                 overviewPage.initializationCompleted = true;
                 console.log("Successfully authenticated user " + result.user.username._content);
@@ -187,7 +190,7 @@ Page {
                 overviewColumn.visible = true;
                 overviewColumn.opacity = 1;
                 openTab(0);
-
+                flickrApi.peopleGetInfo(overviewPage.myLoginData.user.id);
             }
         }
         onTestLoginError: {
@@ -195,6 +198,19 @@ Page {
                 hideAccountVerificationColumn();
                 verificationFailedColumn.visible = true;
                 verificationFailedColumn.opacity = 1;
+            }
+        }
+        onPeopleGetInfoSuccessful: {
+            if (userId === overviewPage.myLoginData.user.id) {
+                ownProfileView.loaded = true;
+                overviewPage.myUser = result;
+                profileLoader.active = true;
+            }
+        }
+        onPeopleGetInfoError: {
+            if (userId === overviewPage.myLoginData.user.id) {
+                ownProfileView.loaded = true;
+                profileLoader.active = true;
             }
         }
 
@@ -896,9 +912,34 @@ Page {
                     }
 
                     Item {
-                        id: profileView
+                        id: ownProfileView
                         width: viewsSlideshow.width
                         height: viewsSlideshow.height
+
+                        property bool loaded : false;
+
+                        Column {
+                            width: parent.width
+                            height: ownProfileProgressLabel.height + ownProfileProgressIndicator.height + Theme.paddingSmall
+                            visible: !ownProfileView.loaded
+                            opacity: ownProfileView.loaded ? 0 : 1
+                            id: ownProfileProgressColumn
+                            spacing: Theme.paddingSmall
+                            Behavior on opacity { NumberAnimation {} }
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            InfoLabel {
+                                id: ownProfileProgressLabel
+                                text: qsTr("Loading profile...")
+                            }
+
+                            BusyIndicator {
+                                id: ownProfileProgressIndicator
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                running: !ownProfileView.loaded
+                                size: BusyIndicatorSize.Large
+                            }
+                        }
 
                         Loader {
                             id: profileLoader
@@ -920,13 +961,14 @@ Page {
 
                                 Profile {
                                     id: ownProfile
-                                    profileModel: accountModel.getCurrentAccount()
+                                    profileModel: overviewPage.myUser
 
                                     Connections {
-                                        target: accountModel
-                                        onCredentialsVerified: {
-                                            console.log("Updating profile page...");
-                                            ownProfile.profileModel = accountModel.getCurrentAccount();
+                                        target: flickrApi
+                                        onPeopleGetInfoSuccessful: {
+                                            if (userId === overviewPage.myLoginData.user.id) {
+                                                ownProfile.profileModel = result;
+                                            }
                                         }
                                     }
                                 }
