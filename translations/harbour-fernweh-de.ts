@@ -158,23 +158,11 @@
 <context>
     <name>Profile</name>
     <message>
-        <source>%1 Following</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1 Followers</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1 Tweets</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>%1 Favorites</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Joined in %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 Photos</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -182,13 +170,6 @@
     <name>ProfileButton</name>
     <message>
         <source>Profile</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>ProfileHeader</name>
-    <message>
-        <source>@%1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

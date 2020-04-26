@@ -29,6 +29,7 @@
 
 #include "flickraccount.h"
 #include "flickrapi.h"
+#include "ownphotosmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -42,6 +43,9 @@ int main(int argc, char *argv[])
 
     FlickrApi *flickrApi = flickrAccount.getFlickrApi();
     context->setContextProperty("flickrApi", flickrApi);
+
+    OwnPhotosModel ownPhotosModel(flickrApi);
+    context->setContextProperty("ownPhotosModel", &ownPhotosModel);
 
     view->setSource(SailfishApp::pathTo("qml/harbour-fernweh.qml"));
     view->show();

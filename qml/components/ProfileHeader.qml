@@ -79,22 +79,20 @@ Item {
             Image {
                 id: profilePicture
                 source: Functions.getProfileImageUrl(profileModel.person)
-                width: parent.width - parent.width / 10
-                height: parent.height - parent.height / 10
+                width: parent.width
+                height: parent.height
                 fillMode: Image.PreserveAspectCrop
                 anchors.margins: Theme.horizontalPageMargin + parent.width / 60
-                anchors.centerIn: profilePictureBackground
                 visible: false
             }
 
             Rectangle {
                 id: profilePictureMask
-                width: parent.width - parent.width / 10
-                height: parent.height - parent.height / 10
+                width: parent.width
+                height: parent.height
                 color: Theme.primaryColor
-                radius: (parent.width - parent.width / 10) / 2
+                radius: parent.width / 2
                 anchors.margins: Theme.horizontalPageMargin + parent.width / 60
-                anchors.centerIn: profilePictureBackground
                 visible: false
             }
 
@@ -135,9 +133,9 @@ Item {
         }
         Text {
             id: profileNameText
-            text: Emoji.emojify(profileModel.name, Theme.fontSizeMedium)
+            text: profileModel.person.realname._content
             font {
-                pixelSize: accountModel.getFontSize() === "fernweh" ? Theme.fontSizeMedium : Theme.fontSizeLarge
+                pixelSize: flickrAccount.getFontSize() === "fernweh" ? Theme.fontSizeMedium : Theme.fontSizeLarge
                 bold: true
             }
             color: Theme.primaryColor
@@ -156,9 +154,9 @@ Item {
         }
         Text {
             id: profileScreenNameText
-            text: qsTr("@%1").arg(profileModel.screen_name)
+            text: profileModel.person.username._content
             font {
-                pixelSize: accountModel.getFontSize() === "fernweh" ? Theme.fontSizeSmall : Theme.fontSizeMedium
+                pixelSize: flickrAccount.getFontSize() === "fernweh" ? Theme.fontSizeExtraSmall : Theme.fontSizeSmall
                 bold: true
             }
             color: Theme.primaryColor

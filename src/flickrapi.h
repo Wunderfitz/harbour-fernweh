@@ -40,18 +40,25 @@ public:
 
     Q_INVOKABLE void testLogin();
     Q_INVOKABLE void peopleGetInfo(const QString &userId);
+    Q_INVOKABLE void peopleGetPhotos(const QString &userId);
 
 signals:
     void testLoginSuccessful(const QVariantMap &result);
     void testLoginError(const QString &errorMessage);
     void peopleGetInfoSuccessful(const QString userId, const QVariantMap &result);
     void peopleGetInfoError(const QString userId, const QString &errorMessage);
+    void peopleGetPhotosSuccessful(const QString userId, const QVariantMap &result);
+    void peopleGetPhotosError(const QString userId, const QString &errorMessage);
+    void ownPhotosSuccessful(const QVariantMap &result, const bool incrementalUpdate);
+    void ownPhotosError(const QString &errorMessage);
 
 public slots:
     void handleTestLoginSuccessful();
     void handleTestLoginError(QNetworkReply::NetworkError error);
     void handlePeopleGetInfoSuccessful();
     void handlePeopleGetInfoError(QNetworkReply::NetworkError error);
+    void handlePeopleGetPhotosSuccessful();
+    void handlePeopleGetPhotosError(QNetworkReply::NetworkError error);
 
 private:
     O1Requestor *requestor;

@@ -29,6 +29,10 @@ function getProfileImageUrl(userInformation) {
     return profileImageUrl;
 }
 
+function getDateFromTimestamp(timestamp) {
+    return new Date(timestamp * 1000);
+}
+
 // =============== TWITTER STUFF BEGINS HERE=======================
 
 function updateFernweh() {

@@ -191,6 +191,7 @@ Page {
                 overviewColumn.opacity = 1;
                 openTab(0);
                 flickrApi.peopleGetInfo(overviewPage.myLoginData.user.id);
+                ownPhotosModel.update();
             }
         }
         onTestLoginError: {

@@ -20,7 +20,8 @@ include(src/o2/o2.pri)
 
 SOURCES += src/harbour-fernweh.cpp \
     src/flickraccount.cpp \
-    src/flickrapi.cpp
+    src/flickrapi.cpp \
+    src/ownphotosmodel.cpp
 
 DISTFILES += qml/harbour-fernweh.qml \
     qml/pages/*.qml \
@@ -67,4 +68,5 @@ TRANSLATIONS += translations/harbour-fernweh-de.ts
 
 HEADERS += \
     src/flickraccount.h \
-    src/flickrapi.h
+    src/flickrapi.h \
+    src/ownphotosmodel.h
