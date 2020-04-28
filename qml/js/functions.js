@@ -33,6 +33,11 @@ function getDateFromTimestamp(timestamp) {
     return new Date(timestamp * 1000);
 }
 
+function getUrlForPhoto(photo) {
+    var url = "https://farm" + photo.farm + ".static.flickr.com/" + photo.server + "/" + photo.id + "_" + photo.secret + "_m.jpg";
+    return url;
+}
+
 // =============== TWITTER STUFF BEGINS HERE=======================
 
 function updateFernweh() {

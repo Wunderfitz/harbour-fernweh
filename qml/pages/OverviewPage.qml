@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with Fernweh. If not, see <http://www.gnu.org/licenses/>.
 */
-import QtQuick 2.0
+import QtQuick 2.5
 import QtGraphicalEffects 1.0
 import QtMultimedia 5.0
 import Sailfish.Silica 1.0
@@ -217,6 +217,10 @@ Page {
 
     }
 
+    AppNotification {
+        id: overviewNotification
+    }
+
     Item {
         id: persistentNotificationItem
         enabled: false
@@ -382,28 +386,28 @@ Page {
                         property bool loaded : false;
                         property bool reloading: false;
 
-//                        Connections {
-//                            target: timelineModel
-//                            onHomeTimelineStartUpdate: {
-//                                ownPicturesListView.currentIndex = -1;
-//                                ownPicturesListView.footer = ownPicturesFooterComponent;
-//                            }
+                        Connections {
+                            target: ownPhotosModel
+                            onOwnPhotosStartUpdate: {
+                                ownPhotosGridView.currentIndex = -1;
+                                ownPhotosGridView.footer = ownPicturesFooterComponent;
+                            }
 
-//                            onHomeTimelineUpdated: {
-//                                ownPicturesListView.currentIndex = modelIndex;
-//                                ownPicturesView.loaded = true;
-//                                ownPicturesView.reloading = false;
-//                            }
-//                            onHomeTimelineError: {
-//                                ownPicturesView.loaded = true;
-//                                ownPicturesView.reloading = false;
-//                                overviewNotification.show(errorMessage);
-//                            }
-//                            onHomeTimelineEndReached: {
-//                                ownPicturesListView.footer = null;
-//                                overviewNotification.show(qsTr("No tweets found. Follow more people to get their tweets in your timeline!"));
-//                            }
-//                        }
+                            onOwnPhotosUpdated: {
+                                ownPhotosGridView.currentIndex = modelIndex;
+                                ownPicturesView.loaded = true;
+                                ownPicturesView.reloading = false;
+                            }
+                            onOwnPhotosError: {
+                                ownPicturesView.loaded = true;
+                                ownPicturesView.reloading = false;
+                                overviewNotification.show(errorMessage);
+                            }
+                            onOwnPhotosEndReached: {
+                                ownPhotosGridView.footer = null;
+                                overviewNotification.show(qsTr("No photos found. Upload more photos to see more here! ;)"));
+                            }
+                        }
 
                         Column {
                             width: parent.width
@@ -428,41 +432,70 @@ Page {
                             }
                         }
 
-                        SilicaListView {
-                            id: ownPicturesListView
-                            opacity: ownPicturesView.loaded ? 1 : 0
-                            Behavior on opacity { NumberAnimation {} }
-                            visible: ownPicturesView.loaded
+                        SilicaGridView {
+
+                            id: ownPhotosGridView
+
                             width: parent.width
                             height: parent.height
-                            contentHeight: homeTimelineTweet.height
+                            visible: ownPicturesView.loaded
+                            opacity: ownPicturesView.loaded ? 1 : 0
+                            Behavior on opacity { NumberAnimation {} }
+
+                            cellWidth: width / 2;
+                            cellHeight: width / 2;
+
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
                             clip: true
 
-                            model: timelineModel
+                            model: ownPhotosModel
 
-//                            delegate: Tweet {
-//                                id: homeTimelineTweet
-//                                tweetModel: display
-//                                userId: overviewPage.myUser.id_str
-//                            }
+                            delegate:  Item {
+                                width: ownPhotosGridView.cellWidth
+                                height: ownPhotosGridView.cellHeight
+                                Image {
+
+                                    id: singleOwnImage
+                                    width: parent.width
+                                    height: parent.height
+                                    source: Functions.getUrlForPhoto(display)
+
+                                    fillMode: Image.PreserveAspectCrop
+                                    autoTransform: true
+                                    asynchronous: true
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            // TODO: Open Image page
+                                        }
+                                    }
+                                }
+                                ImageProgressIndicator {
+                                    image: singleOwnImage
+                                    small: true
+                                }
+                            }
 
                             onMovementEnded: {
-                                timelineModel.setCurrentTweetId(ownPicturesListView.itemAt(ownPicturesListView.contentX, ( ownPicturesListView.contentY + Math.round(overviewPage.height / 2))).tweetModel.id_str);
+                                //timelineModel.setCurrentTweetId(ownPicturesListView.itemAt(ownPicturesListView.contentX, ( ownPicturesListView.contentY + Math.round(overviewPage.height / 2))).tweetModel.id_str);
                             }
 
                             onQuickScrollAnimatingChanged: {
                                 if (!quickScrollAnimating) {
-                                    timelineModel.setCurrentTweetId(ownPicturesListView.itemAt(ownPicturesListView.contentX, ( ownPicturesListView.contentY + Math.round(overviewPage.height / 2))).tweetModel.id_str);
+                                    //timelineModel.setCurrentTweetId(ownPicturesListView.itemAt(ownPicturesListView.contentX, ( ownPicturesListView.contentY + Math.round(overviewPage.height / 2))).tweetModel.id_str);
                                 }
                             }
 
                             onCurrentIndexChanged: {
-                                timelineModel.setCurrentTweetId(currentItem.tweetModel.id_str);
+                                //timelineModel.setCurrentTweetId(currentItem.tweetModel.id_str);
                             }
 
                             footer: ownPicturesFooterComponent;
 
                             VerticalScrollDecorator {}
+
                         }
 
                         Component {
