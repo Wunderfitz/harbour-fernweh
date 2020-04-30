@@ -455,12 +455,38 @@ Page {
                             delegate:  Item {
                                 width: ownPhotosGridView.cellWidth
                                 height: ownPhotosGridView.cellHeight
+
+                                Connections {
+                                    target: flickrApi
+                                    onDownloadSuccessful: {
+                                        if (String(downloadIds.farm) === String(display.farm) &&
+                                            String(downloadIds.server) === String(display.server) &&
+                                            String(downloadIds.id) === String(display.id) &&
+                                            String(downloadIds.photoSize) === "n") {
+                                            singleOwnImage.source = filePath;
+                                        }
+                                    }
+                                    onDownloadError: {
+                                        if (String(downloadIds.farm) === String(display.farm) &&
+                                            String(downloadIds.server) === String(display.server) &&
+                                            String(downloadIds.id) === String(display.id) &&
+                                            String(downloadIds.photoSize) === "n") {
+
+                                        }
+                                    }
+                                }
+
                                 Image {
+
+                                    Component.onCompleted: {
+                                        flickrApi.downloadPhoto(display.farm, display.server, display.id, display.secret, "n")
+                                    }
 
                                     id: singleOwnImage
                                     width: parent.width
                                     height: parent.height
-                                    source: Functions.getUrlForPhoto(display)
+                                    //source: Functions.getUrlForPhoto(display)
+                                    //source: "image://flickr/" + display.farm + "/" + display.server + "/" +  display.id + "/" +  display.secret
 
                                     fillMode: Image.PreserveAspectCrop
                                     autoTransform: true

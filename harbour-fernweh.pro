@@ -14,7 +14,7 @@ TARGET = harbour-fernweh
 
 CONFIG += sailfishapp sailfishapp_i18n c++11
 
-QT += core network dbus positioning sql
+QT += core network dbus positioning sql quick
 
 include(src/o2/o2.pri)
 

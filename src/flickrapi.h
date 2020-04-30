@@ -31,16 +31,23 @@
 #include "o1requestor.h"
 
 const char API_BASE_URL[] = "https://www.flickr.com/services/rest";
+const char CUSTOM_HEADER_FARM[] = "X-Fernweh-Farm";
+const char CUSTOM_HEADER_SERVER[] = "X-Fernweh-Server";
+const char CUSTOM_HEADER_ID[] = "X-Fernweh-Id";
+const char CUSTOM_HEADER_SECRET[] = "X-Fernweh-Secret";
+const char CUSTOM_HEADER_SIZE[] = "X-Fernweh-Size";
 
 class FlickrApi : public QObject
 {
     Q_OBJECT
 public:
     explicit FlickrApi(O1Requestor* requestor, QNetworkAccessManager *manager, QObject *parent = nullptr);
+    ~FlickrApi();
 
     Q_INVOKABLE void testLogin();
     Q_INVOKABLE void peopleGetInfo(const QString &userId);
     Q_INVOKABLE void peopleGetPhotos(const QString &userId);
+    Q_INVOKABLE void downloadPhoto(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
 
 signals:
     void testLoginSuccessful(const QVariantMap &result);
@@ -51,6 +58,8 @@ signals:
     void peopleGetPhotosError(const QString userId, const QString &errorMessage);
     void ownPhotosSuccessful(const QVariantMap &result, const bool incrementalUpdate);
     void ownPhotosError(const QString &errorMessage);
+    void downloadError(const QVariantMap &downloadIds, const QString &errorMessage);
+    void downloadSuccessful(const QVariantMap &downloadIds, const QString &filePath);
 
 public slots:
     void handleTestLoginSuccessful();
@@ -59,8 +68,14 @@ public slots:
     void handlePeopleGetInfoError(QNetworkReply::NetworkError error);
     void handlePeopleGetPhotosSuccessful();
     void handlePeopleGetPhotosError(QNetworkReply::NetworkError error);
+    void handleDownloadError(QNetworkReply::NetworkError error);
+    void handleDownloadFinished();
+
 
 private:
+    QVariantMap getDownloadIds(const QNetworkRequest &request);
+    QString getDownloadFilePath(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
+
     O1Requestor *requestor;
     QNetworkAccessManager *manager;
 };

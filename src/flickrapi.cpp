@@ -18,10 +18,18 @@
 */
 #include "flickrapi.h"
 
+#include <QStandardPaths>
+#include <QFile>
+#include <QDir>
+
 FlickrApi::FlickrApi(O1Requestor *requestor, QNetworkAccessManager *manager, QObject *parent) : QObject(parent)
 {
     this->requestor = requestor;
     this->manager = manager;
+}
+
+FlickrApi::~FlickrApi()
+{
 }
 
 void FlickrApi::testLogin()
@@ -95,6 +103,34 @@ void FlickrApi::peopleGetPhotos(const QString &userId)
 
 }
 
+void FlickrApi::downloadPhoto(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size)
+{
+    qDebug() << "FlickrApi::downloadPhoto" << farm << server << id << secret << size;
+    QUrl url = QUrl("https://farm" + farm + ".staticflickr.com/" + server + "/" + id + "_" + secret + ".jpg");
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Wayland; SailfishOS) Piepmatz (Not Firefox/42.0)");
+    request.setRawHeader(QByteArray("Accept"), QByteArray("image/jpg,image/jpeg"));
+    request.setRawHeader(QByteArray("Accept-Charset"), QByteArray("utf-8"));
+    request.setRawHeader(QByteArray("Connection"), QByteArray("close"));
+    request.setRawHeader(QByteArray("Cache-Control"), QByteArray("max-age=0"));
+    request.setRawHeader(QByteArray(CUSTOM_HEADER_FARM), farm.toUtf8());
+    request.setRawHeader(QByteArray(CUSTOM_HEADER_SERVER), server.toUtf8());
+    request.setRawHeader(QByteArray(CUSTOM_HEADER_ID), id.toUtf8());
+    request.setRawHeader(QByteArray(CUSTOM_HEADER_SECRET), secret.toUtf8());
+    request.setRawHeader(QByteArray(CUSTOM_HEADER_SIZE), size.toUtf8());
+
+    QString filePath = this->getDownloadFilePath(farm, server, id, secret, size);
+
+    if (QFile::exists(filePath)) {
+        emit downloadSuccessful(this->getDownloadIds(request), filePath);
+    } else {
+        QNetworkReply *reply = manager->get(request);
+        connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleDownloadError(QNetworkReply::NetworkError)));
+        connect(reply, SIGNAL(finished()), this, SLOT(handleDownloadFinished()));
+    }
+}
+
 void FlickrApi::handleTestLoginSuccessful()
 {
     qDebug() << "FlickrApi::handleTestLoginSuccessful";
@@ -161,7 +197,7 @@ void FlickrApi::handlePeopleGetPhotosSuccessful()
     QUrlQuery urlQuery(urlQueryRaw);
 
     QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
-    qDebug().noquote() << jsonDocument.toJson();
+    //qDebug().noquote() << jsonDocument.toJson();
     if (jsonDocument.isObject()) {
         if (urlQuery.queryItemValue("user_id") == "me") {
             emit ownPhotosSuccessful(jsonDocument.object().toVariantMap(), false);
@@ -188,4 +224,65 @@ void FlickrApi::handlePeopleGetPhotosError(QNetworkReply::NetworkError error)
     } else {
         emit peopleGetPhotosError(urlQuery.queryItemValue("user_id"), reply->errorString());
     }
+}
+
+void FlickrApi::handleDownloadError(QNetworkReply::NetworkError error)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    qWarning() << "FlickrApi::handleDownloadError:" << (int)error << reply->errorString();
+    emit downloadError(this->getDownloadIds(reply->request()), reply->errorString());
+}
+
+void FlickrApi::handleDownloadFinished()
+{
+    qDebug() << "FlickrApi::handleDownloadFinished";
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
+    if (reply->error() != QNetworkReply::NoError) {
+        return;
+    }
+
+    QVariantMap downloadIds = this->getDownloadIds(reply->request());
+
+    QDir cachePath(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+    if (!cachePath.exists()) {
+        cachePath.mkpath(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+    }
+
+    QString filePath = this->getDownloadFilePath(downloadIds.value("farm").toString(),
+                                                 downloadIds.value("server").toString(),
+                                                 downloadIds.value("id").toString(),
+                                                 downloadIds.value("secret").toString(),
+                                                 downloadIds.value("photoSize").toString());
+
+    QFile downloadedFile(filePath);
+    if (downloadedFile.open(QIODevice::WriteOnly)) {
+        qDebug() << "Writing downloaded file to " + downloadedFile.fileName();
+        downloadedFile.write(reply->readAll());
+        downloadedFile.close();
+        emit downloadSuccessful(downloadIds, filePath);
+    } else {
+        emit downloadError(downloadIds, "Error storing file at " + filePath + ", error was: " + downloadedFile.errorString());
+    }
+}
+
+QVariantMap FlickrApi::getDownloadIds(const QNetworkRequest &request)
+{
+    QVariantMap downloadIds;
+    downloadIds.insert("farm", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_FARM)));
+    downloadIds.insert("server", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_SERVER)));
+    downloadIds.insert("id", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_ID)));
+    downloadIds.insert("secret", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_SECRET)));
+    downloadIds.insert("photoSize", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_SIZE)));
+    return downloadIds;
+}
+
+QString FlickrApi::getDownloadFilePath(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size)
+{
+    QString filePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1Char('/') + farm + "_"
+                                                                                                          + server + "_"
+                                                                                                          + id + "_"
+                                                                                                          + secret + "_"
+                                                                                                          + size + ".jpg";
+    return filePath;
 }

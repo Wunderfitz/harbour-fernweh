@@ -25,6 +25,7 @@
 #include <QQuickView>
 #include <QtQml>
 #include <QQmlContext>
+#include <QQmlEngine>
 #include <QGuiApplication>
 
 #include "flickraccount.h"
