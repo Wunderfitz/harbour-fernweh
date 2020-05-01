@@ -101,10 +101,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Load more tweets</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>follows you now!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -142,6 +138,10 @@
     </message>
     <message>
         <source>No photos found. Upload more photos to see more here! ;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load more pictures</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

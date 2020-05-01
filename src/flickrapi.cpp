@@ -77,7 +77,7 @@ void FlickrApi::peopleGetInfo(const QString &userId)
 
 }
 
-void FlickrApi::peopleGetPhotos(const QString &userId)
+void FlickrApi::peopleGetPhotos(const QString &userId, const int &page)
 {
     qDebug() << "FlickrApi::peopleGetPhotos" << userId;
     QUrl url = QUrl(API_BASE_URL);
@@ -86,6 +86,7 @@ void FlickrApi::peopleGetPhotos(const QString &userId)
     urlQuery.addQueryItem("user_id", userId);
     urlQuery.addQueryItem("format", "json");
     urlQuery.addQueryItem("nojsoncallback", "1");
+    urlQuery.addQueryItem("page", QString::number(page));
     urlQuery.addQueryItem("per_page", "50");
     urlQuery.addQueryItem("extras", "date_taken");
     url.setQuery(urlQuery);
@@ -96,6 +97,7 @@ void FlickrApi::peopleGetPhotos(const QString &userId)
     requestParameters.append(O0RequestParameter(QByteArray("user_id"), userId.toUtf8()));
     requestParameters.append(O0RequestParameter(QByteArray("format"), QByteArray("json")));
     requestParameters.append(O0RequestParameter(QByteArray("nojsoncallback"), QByteArray("1")));
+    requestParameters.append(O0RequestParameter(QByteArray("page"), QString::number(page).toUtf8()));
     requestParameters.append(O0RequestParameter(QByteArray("per_page"), QByteArray("50")));
     requestParameters.append(O0RequestParameter(QByteArray("extras"), QByteArray("date_taken")));
     QNetworkReply *reply = requestor->get(request, requestParameters);
@@ -220,9 +222,13 @@ void FlickrApi::handlePeopleGetPhotosSuccessful()
     QUrlQuery urlQuery(urlQueryRaw);
 
     QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+
+    //qDebug().noquote() << jsonDocument.toJson();
+
     if (jsonDocument.isObject()) {
+        int page = urlQuery.queryItemValue("page").toInt();
         if (urlQuery.queryItemValue("user_id") == "me") {
-            emit ownPhotosSuccessful(jsonDocument.object().toVariantMap(), false);
+            emit ownPhotosSuccessful(jsonDocument.object().toVariantMap(), page > 1 ? true : false);
         } else {
             emit peopleGetPhotosSuccessful(urlQuery.queryItemValue("user_id"), jsonDocument.object().toVariantMap());
         }

@@ -35,6 +35,7 @@ public:
 
     virtual int rowCount(const QModelIndex&) const;
     virtual QVariant data(const QModelIndex &index, int role) const;
+    virtual bool insertRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
     Q_INVOKABLE void update();
     Q_INVOKABLE void loadMore();
@@ -45,6 +46,7 @@ signals:
     void ownPhotosUpdated(int modelIndex);
     void ownPhotosError(const QString &errorMessage);
     void ownPhotosEndReached();
+    void ownPhotosAppended();
 
 public slots:
     void handleOwnPhotosSuccessful(const QVariantMap &result, const bool incrementalUpdate);
@@ -52,8 +54,11 @@ public slots:
 
 private:
     QVariantList ownPhotos;
+    QVariantList incrementalUpdateResult;
     QSettings settings;
     FlickrApi *flickrApi;
+    int currentPage;
+    int maxPages;
 
 };
 

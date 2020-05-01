@@ -24,7 +24,7 @@
 const char SETTINGS_CURRENT_PHOTO[] = "photos/currentId";
 
 OwnPhotosModel::OwnPhotosModel(FlickrApi *flickrApi)
-    : settings("harbour-piepmatz", "settings")
+    : settings("harbour-fernweh", "settings")
 {
     this->flickrApi = flickrApi;
 
@@ -49,6 +49,16 @@ QVariant OwnPhotosModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool OwnPhotosModel::insertRows(int row, int count, const QModelIndex &parent)
+{
+    qDebug() << "OwnPhotosModel::loadMore" << row << count;
+    beginInsertRows(parent, rowCount(QModelIndex()), rowCount(QModelIndex()) + count - 1);
+    ownPhotos.append(this->incrementalUpdateResult);
+    endInsertRows();
+    emit ownPhotosAppended();
+    return true;
+}
+
 void OwnPhotosModel::update()
 {
     qDebug() << "OwnPhotosModel::update";
@@ -60,13 +70,7 @@ void OwnPhotosModel::loadMore()
 {
     qDebug() << "OwnPhotosModel::loadMore";
     emit ownPhotosStartUpdate();
-    QString maxId;
-    // TODO: Implement paging!!
-    if (!ownPhotos.isEmpty()) {
-        QVariantMap lastItem = ownPhotos.last().toMap();
-        maxId = lastItem.value("id_str").toString();
-    }
-    flickrApi->peopleGetPhotos("me");
+    flickrApi->peopleGetPhotos("me", this->currentPage + 1);
 }
 
 void OwnPhotosModel::setCurrentPhotoId(const QString &photoId)
@@ -78,17 +82,21 @@ void OwnPhotosModel::setCurrentPhotoId(const QString &photoId)
 void OwnPhotosModel::handleOwnPhotosSuccessful(const QVariantMap &result, const bool incrementalUpdate)
 {
     qDebug() << "OwnPhotosModel::handleOwnPhotosSuccessful";
-    beginResetModel();
+
+    this->currentPage = result.value("photos").toMap().value("page").toInt();
+    this->maxPages = result.value("photos").toMap().value("pages").toInt();
+    qDebug() << "Current page: " << this->currentPage << ", maximum pages: " << this->maxPages;
     if (incrementalUpdate) {
         qDebug() << "User wanted to load more photos";
         if (result.value("photos").toMap().value("photo").toList().size() > 1) {
-            QVariantList incrementalUpdateResult = result.value("photos").toMap().value("photo").toList();
-            incrementalUpdateResult.removeFirst();
-            ownPhotos.append(incrementalUpdateResult);
+            this->incrementalUpdateResult.clear();
+            this->incrementalUpdateResult = result.value("photos").toMap().value("photo").toList();
+            insertRows(rowCount(QModelIndex()), this->incrementalUpdateResult.size());
         } else {
             emit ownPhotosEndReached();
         }
     } else {
+        beginResetModel();
         qDebug() << "Complete update of own photos";
         if (result.isEmpty()) {
             emit ownPhotosEndReached();
@@ -96,22 +104,22 @@ void OwnPhotosModel::handleOwnPhotosSuccessful(const QVariantMap &result, const 
             ownPhotos.clear();
             ownPhotos.append(result.value("photos").toMap().value("photo").toList());
         }
-    }
-    endResetModel();
+        endResetModel();
 
-    QListIterator<QVariant> photoIterator(ownPhotos);
-    int i = 0;
-    int modelIndex = 0;
-    QString lastPhotoId = settings.value(SETTINGS_CURRENT_PHOTO).toString();
-    while (photoIterator.hasNext()) {
-        QVariantMap singlePhoto = photoIterator.next().toMap();
-        if (singlePhoto.value("id").toString() == lastPhotoId) {
-            modelIndex = i;
+        QListIterator<QVariant> photoIterator(ownPhotos);
+        int i = 0;
+        int modelIndex = 0;
+        QString lastPhotoId = settings.value(SETTINGS_CURRENT_PHOTO).toString();
+        while (photoIterator.hasNext()) {
+            QVariantMap singlePhoto = photoIterator.next().toMap();
+            if (singlePhoto.value("id").toString() == lastPhotoId) {
+                modelIndex = i;
+            }
+            i++;
         }
-        i++;
-    }
 
-    emit ownPhotosUpdated(modelIndex);
+        emit ownPhotosUpdated(modelIndex);
+    }
 }
 
 void OwnPhotosModel::handleOwnPhotosError(const QString &errorMessage)

@@ -46,7 +46,7 @@ public:
 
     Q_INVOKABLE void testLogin();
     Q_INVOKABLE void peopleGetInfo(const QString &userId);
-    Q_INVOKABLE void peopleGetPhotos(const QString &userId);
+    Q_INVOKABLE void peopleGetPhotos(const QString &userId, const int &page = 1);
     Q_INVOKABLE void downloadPhoto(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
     Q_INVOKABLE void statsGetTotalViews();
 

@@ -521,9 +521,9 @@ Page {
                                 }
                             }
 
-                            onCurrentIndexChanged: {
-                                ownPhotosModel.setCurrentPhotoId(currentItem.photoId);
-                            }
+//                            onCurrentIndexChanged: {
+//                                ownPhotosModel.setCurrentPhotoId(currentItem.photoId);
+//                            }
 
                             footer: ownPicturesFooterComponent;
 
@@ -540,14 +540,14 @@ Page {
                                 Button {
                                     id: ownPicturesLoadMoreButton
                                     Behavior on opacity { NumberAnimation {} }
-                                    text: qsTr("Load more tweets")
+                                    text: qsTr("Load more pictures")
                                     preferredWidth: Theme.buttonWidthLarge
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     opacity: visible ? 1 : 0
                                     onClicked: {
-                                        console.log("Loading more tweets for timeline");
-                                        timelineModel.loadMore();
+                                        console.log("Loading more pictures...");
+                                        ownPhotosModel.loadMore();
                                         ownPicturesLoadMoreBusyIndicator.visible = true;
                                         ownPicturesLoadMoreButton.visible = false;
                                     }
@@ -563,8 +563,8 @@ Page {
                                     size: BusyIndicatorSize.Medium
                                 }
                                 Connections {
-                                    target: timelineModel
-                                    onHomeTimelineUpdated: {
+                                    target: ownPhotosModel
+                                    onOwnPhotosAppended: {
                                         ownPicturesLoadMoreBusyIndicator.visible = false;
                                         ownPicturesLoadMoreButton.visible = true;
                                     }
