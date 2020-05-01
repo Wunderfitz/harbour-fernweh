@@ -53,12 +53,17 @@ Item {
     property variant profileModel;
     property variant profileTimeline;
     property bool loadingError : false;
+    property bool ownProfile: overviewPage.myLoginData.user.id === profileModel.person.id
     property string componentFontSize: ( flickrAccount.getFontSize() === "fernweh" ? Theme.fontSizeExtraSmall : Theme.fontSizeSmall) ;
     property string iconFontSize: ( flickrAccount.getFontSize() === "fernweh" ? Theme.fontSizeSmall : Theme.fontSizeMedium) ;
 
     Component.onCompleted: {
         console.log("Profile component initialized for " + profileModel.person.id + ": " + profileModel.person.realname._content);
-        //twitterApi.userTimeline(profileModel.screen_name);
+        if (overviewPage.myLoginData.user.id && profileItem.ownProfile) {
+            profileTimelineLoadingIndicator.visible = false;
+        } else {
+            //twitterApi.userTimeline(profileModel.screen_name);
+        }
     }
 
     onProfileModelChanged: {
@@ -221,7 +226,86 @@ Item {
                     width: parent.width
                     color: Theme.primaryColor
                     horizontalAlignment: Qt.AlignHCenter
+                    visible: !profileItem.ownProfile
                 }
+
+                SectionHeader {
+                    text: qsTr("Statistics")
+                    visible: profileItem.ownProfile
+                }
+
+                Text {
+                    id: totalViewsText
+                    text: qsTr("<b>Total Views:</b> %1").arg(Number(overviewPage.myStats.stats.total.views).toLocaleString(Qt.locale(), "f", 0))
+                    font.pixelSize: componentFontSize
+                    color: Theme.primaryColor
+                    width: parent.width - ( 2 * Theme.horizontalPageMargin )
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    wrapMode: Text.Wrap
+                    textFormat: Text.StyledText
+                    visible: profileItem.ownProfile
+                }
+
+                Text {
+                    id: photoViewsText
+                    text: qsTr("<b>Photo Views:</b> %1").arg(Number(overviewPage.myStats.stats.photos.views).toLocaleString(Qt.locale(), "f", 0))
+                    font.pixelSize: componentFontSize
+                    color: Theme.primaryColor
+                    width: parent.width - ( 2 * Theme.horizontalPageMargin )
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    wrapMode: Text.Wrap
+                    textFormat: Text.StyledText
+                    visible: profileItem.ownProfile
+                }
+
+                Text {
+                    id: albumViewsText
+                    text: qsTr("<b>Album Views:</b> %1").arg(Number(overviewPage.myStats.stats.sets.views).toLocaleString(Qt.locale(), "f", 0))
+                    font.pixelSize: componentFontSize
+                    color: Theme.primaryColor
+                    width: parent.width - ( 2 * Theme.horizontalPageMargin )
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    wrapMode: Text.Wrap
+                    textFormat: Text.StyledText
+                    visible: profileItem.ownProfile
+                }
+
+                Text {
+                    id: streamViewsText
+                    text: qsTr("<b>Photostream Views:</b> %1").arg(Number(overviewPage.myStats.stats.photostream.views).toLocaleString(Qt.locale(), "f", 0))
+                    font.pixelSize: componentFontSize
+                    color: Theme.primaryColor
+                    width: parent.width - ( 2 * Theme.horizontalPageMargin )
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    wrapMode: Text.Wrap
+                    textFormat: Text.StyledText
+                    visible: profileItem.ownProfile
+                }
+
+                Text {
+                    id: galleryViewsText
+                    text: qsTr("<b>Photostream Views:</b> %1").arg(Number(overviewPage.myStats.stats.galleries.views).toLocaleString(Qt.locale(), "f", 0))
+                    font.pixelSize: componentFontSize
+                    color: Theme.primaryColor
+                    width: parent.width - ( 2 * Theme.horizontalPageMargin )
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    wrapMode: Text.Wrap
+                    textFormat: Text.StyledText
+                    visible: profileItem.ownProfile
+                }
+
+                Text {
+                    id: collectionViewsText
+                    text: qsTr("<b>Collection Views:</b> %1").arg(Number(overviewPage.myStats.stats.collections.views).toLocaleString(Qt.locale(), "f", 0))
+                    font.pixelSize: componentFontSize
+                    color: Theme.primaryColor
+                    width: parent.width - ( 2 * Theme.horizontalPageMargin )
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    wrapMode: Text.Wrap
+                    textFormat: Text.StyledText
+                    visible: profileItem.ownProfile
+                }
+
             }
 
         }

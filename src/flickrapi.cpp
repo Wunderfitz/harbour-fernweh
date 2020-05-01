@@ -87,6 +87,7 @@ void FlickrApi::peopleGetPhotos(const QString &userId)
     urlQuery.addQueryItem("format", "json");
     urlQuery.addQueryItem("nojsoncallback", "1");
     urlQuery.addQueryItem("per_page", "50");
+    urlQuery.addQueryItem("extras", "date_taken");
     url.setQuery(urlQuery);
     QNetworkRequest request(url);
 
@@ -96,6 +97,7 @@ void FlickrApi::peopleGetPhotos(const QString &userId)
     requestParameters.append(O0RequestParameter(QByteArray("format"), QByteArray("json")));
     requestParameters.append(O0RequestParameter(QByteArray("nojsoncallback"), QByteArray("1")));
     requestParameters.append(O0RequestParameter(QByteArray("per_page"), QByteArray("50")));
+    requestParameters.append(O0RequestParameter(QByteArray("extras"), QByteArray("date_taken")));
     QNetworkReply *reply = requestor->get(request, requestParameters);
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handlePeopleGetPhotosError(QNetworkReply::NetworkError)));
@@ -129,6 +131,27 @@ void FlickrApi::downloadPhoto(const QString &farm, const QString &server, const 
         connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleDownloadError(QNetworkReply::NetworkError)));
         connect(reply, SIGNAL(finished()), this, SLOT(handleDownloadFinished()));
     }
+}
+
+void FlickrApi::statsGetTotalViews()
+{
+    qDebug() << "FlickrApi::statsGetTotalViews";
+    QUrl url = QUrl(API_BASE_URL);
+    QUrlQuery urlQuery = QUrlQuery();
+    urlQuery.addQueryItem("method", "flickr.stats.getTotalViews");
+    urlQuery.addQueryItem("format", "json");
+    urlQuery.addQueryItem("nojsoncallback", "1");
+    url.setQuery(urlQuery);
+    QNetworkRequest request(url);
+
+    QList<O0RequestParameter> requestParameters = QList<O0RequestParameter>();
+    requestParameters.append(O0RequestParameter(QByteArray("method"), QByteArray("flickr.stats.getTotalViews")));
+    requestParameters.append(O0RequestParameter(QByteArray("format"), QByteArray("json")));
+    requestParameters.append(O0RequestParameter(QByteArray("nojsoncallback"), QByteArray("1")));
+    QNetworkReply *reply = requestor->get(request, requestParameters);
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleStatsGetTotalViewsError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(finished()), this, SLOT(handleStatsGetTotalViewsSuccessful()));
 }
 
 void FlickrApi::handleTestLoginSuccessful()
@@ -197,7 +220,6 @@ void FlickrApi::handlePeopleGetPhotosSuccessful()
     QUrlQuery urlQuery(urlQueryRaw);
 
     QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
-    //qDebug().noquote() << jsonDocument.toJson();
     if (jsonDocument.isObject()) {
         if (urlQuery.queryItemValue("user_id") == "me") {
             emit ownPhotosSuccessful(jsonDocument.object().toVariantMap(), false);
@@ -264,6 +286,31 @@ void FlickrApi::handleDownloadFinished()
     } else {
         emit downloadError(downloadIds, "Error storing file at " + filePath + ", error was: " + downloadedFile.errorString());
     }
+}
+
+void FlickrApi::handleStatsGetTotalViewsSuccessful()
+{
+    qDebug() << "FlickrApi::handleStatsGetTotalViewsSuccessful";
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
+    if (reply->error() != QNetworkReply::NoError) {
+        return;
+    }
+
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+    // qDebug().noquote() << jsonDocument.toJson();
+    if (jsonDocument.isObject()) {
+        emit statsGetTotalViewsSuccessful(jsonDocument.object().toVariantMap());
+    } else {
+        emit statsGetTotalViewsError("Fernweh couldn't understand Flickr's response!");
+    }
+}
+
+void FlickrApi::handleStatsGetTotalViewsError(QNetworkReply::NetworkError error)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    qWarning() << "FlickrApi::handleStatsGetTotalViewsError:" << (int)error << reply->errorString();
+    emit statsGetTotalViewsError(reply->errorString());
 }
 
 QVariantMap FlickrApi::getDownloadIds(const QNetworkRequest &request)

@@ -155,7 +155,7 @@
 <context>
     <name>OwnPicturesButton</name>
     <message>
-        <source>Pictures</source>
+        <source>Photos</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -167,6 +167,30 @@
     </message>
     <message>
         <source>%1 Photos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Statistics</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Total Views:&lt;/b&gt; %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Photo Views:&lt;/b&gt; %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Album Views:&lt;/b&gt; %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Photostream Views:&lt;/b&gt; %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;b&gt;Collection Views:&lt;/b&gt; %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -34,6 +34,7 @@ Page {
     property int activeTabId: 0;
     property variant myLoginData;
     property variant myUser;
+    property variant myStats;
     property variant profileEntity;
 
     Component.onCompleted: {
@@ -192,6 +193,7 @@ Page {
                 openTab(0);
                 flickrApi.peopleGetInfo(overviewPage.myLoginData.user.id);
                 ownPhotosModel.update();
+                flickrApi.statsGetTotalViews();
             }
         }
         onTestLoginError: {
@@ -213,6 +215,9 @@ Page {
                 ownProfileView.loaded = true;
                 profileLoader.active = true;
             }
+        }
+        onStatsGetTotalViewsSuccessful:{
+            overviewPage.myStats = result;
         }
 
     }
@@ -394,6 +399,7 @@ Page {
                             }
 
                             onOwnPhotosUpdated: {
+                                console.log("Using Index: " + modelIndex);
                                 ownPhotosGridView.currentIndex = modelIndex;
                                 ownPicturesView.loaded = true;
                                 ownPicturesView.reloading = false;
@@ -442,8 +448,8 @@ Page {
                             opacity: ownPicturesView.loaded ? 1 : 0
                             Behavior on opacity { NumberAnimation {} }
 
-                            cellWidth: width / 2;
-                            cellHeight: width / 2;
+                            cellWidth: width / 3;
+                            cellHeight: width / 3;
 
                             anchors.left: parent.left
                             anchors.right: parent.right
@@ -455,6 +461,8 @@ Page {
                             delegate:  Item {
                                 width: ownPhotosGridView.cellWidth
                                 height: ownPhotosGridView.cellHeight
+
+                                property string photoId: display.id;
 
                                 Connections {
                                     target: flickrApi
@@ -483,10 +491,9 @@ Page {
                                     }
 
                                     id: singleOwnImage
-                                    width: parent.width
-                                    height: parent.height
-                                    //source: Functions.getUrlForPhoto(display)
-                                    //source: "image://flickr/" + display.farm + "/" + display.server + "/" +  display.id + "/" +  display.secret
+                                    width: parent.width - Theme.paddingSmall
+                                    height: parent.height - Theme.paddingSmall
+                                    anchors.centerIn: parent
 
                                     fillMode: Image.PreserveAspectCrop
                                     autoTransform: true
@@ -505,17 +512,17 @@ Page {
                             }
 
                             onMovementEnded: {
-                                //timelineModel.setCurrentTweetId(ownPicturesListView.itemAt(ownPicturesListView.contentX, ( ownPicturesListView.contentY + Math.round(overviewPage.height / 2))).tweetModel.id_str);
+                                ownPhotosModel.setCurrentPhotoId(ownPhotosGridView.itemAt((ownPhotosGridView.contentX + Math.round(overviewPage.width / 2)), (ownPhotosGridView.contentY + Math.round(overviewPage.height * 3 / 4))).photoId);
                             }
 
                             onQuickScrollAnimatingChanged: {
                                 if (!quickScrollAnimating) {
-                                    //timelineModel.setCurrentTweetId(ownPicturesListView.itemAt(ownPicturesListView.contentX, ( ownPicturesListView.contentY + Math.round(overviewPage.height / 2))).tweetModel.id_str);
+                                    ownPhotosModel.setCurrentPhotoId(ownPhotosGridView.itemAt((ownPhotosGridView.contentX + Math.round(overviewPage.width / 2)), (ownPhotosGridView.contentY + Math.round(overviewPage.height * 3 / 4))).photoId);
                                 }
                             }
 
                             onCurrentIndexChanged: {
-                                //timelineModel.setCurrentTweetId(currentItem.tweetModel.id_str);
+                                ownPhotosModel.setCurrentPhotoId(currentItem.photoId);
                             }
 
                             footer: ownPicturesFooterComponent;

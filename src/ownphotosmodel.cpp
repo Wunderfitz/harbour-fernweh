@@ -104,8 +104,8 @@ void OwnPhotosModel::handleOwnPhotosSuccessful(const QVariantMap &result, const 
     int modelIndex = 0;
     QString lastPhotoId = settings.value(SETTINGS_CURRENT_PHOTO).toString();
     while (photoIterator.hasNext()) {
-        QMap<QString,QVariant> singlePhoto = photoIterator.next().toMap();
-        if (singlePhoto.value("id_str").toString() == lastPhotoId) {
+        QVariantMap singlePhoto = photoIterator.next().toMap();
+        if (singlePhoto.value("id").toString() == lastPhotoId) {
             modelIndex = i;
         }
         i++;

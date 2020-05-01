@@ -41,7 +41,7 @@ Column {
 
     Label {
         id: ownPicturesButtonText
-        text: qsTr("Pictures")
+        text: qsTr("Photos")
         font.pixelSize: Theme.fontSizeTiny * 4 / 5
         color: ownPicturesButton.isActive ? Theme.highlightColor : Theme.primaryColor
         truncationMode: TruncationMode.Elide

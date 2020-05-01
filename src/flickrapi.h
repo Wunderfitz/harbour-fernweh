@@ -48,6 +48,7 @@ public:
     Q_INVOKABLE void peopleGetInfo(const QString &userId);
     Q_INVOKABLE void peopleGetPhotos(const QString &userId);
     Q_INVOKABLE void downloadPhoto(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
+    Q_INVOKABLE void statsGetTotalViews();
 
 signals:
     void testLoginSuccessful(const QVariantMap &result);
@@ -60,6 +61,8 @@ signals:
     void ownPhotosError(const QString &errorMessage);
     void downloadError(const QVariantMap &downloadIds, const QString &errorMessage);
     void downloadSuccessful(const QVariantMap &downloadIds, const QString &filePath);
+    void statsGetTotalViewsSuccessful(const QVariantMap &result);
+    void statsGetTotalViewsError(const QString &errorMessage);
 
 public slots:
     void handleTestLoginSuccessful();
@@ -70,7 +73,8 @@ public slots:
     void handlePeopleGetPhotosError(QNetworkReply::NetworkError error);
     void handleDownloadError(QNetworkReply::NetworkError error);
     void handleDownloadFinished();
-
+    void handleStatsGetTotalViewsSuccessful();
+    void handleStatsGetTotalViewsError(QNetworkReply::NetworkError error);
 
 private:
     QVariantMap getDownloadIds(const QNetworkRequest &request);
