@@ -48,6 +48,7 @@ public:
     Q_INVOKABLE void peopleGetInfo(const QString &userId);
     Q_INVOKABLE void peopleGetPhotos(const QString &userId, const int &page = 1);
     Q_INVOKABLE void downloadPhoto(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
+    Q_INVOKABLE void copyPhotoToDownloads(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
     Q_INVOKABLE void statsGetTotalViews();
 
 signals:
@@ -61,6 +62,9 @@ signals:
     void ownPhotosError(const QString &errorMessage);
     void downloadError(const QVariantMap &downloadIds, const QString &errorMessage);
     void downloadSuccessful(const QVariantMap &downloadIds, const QString &filePath);
+    void downloadStatus(const QVariantMap &downloadIds, int percentCompleted);
+    void copyToDownloadsSuccessful(const QVariantMap &downloadIds, const QString &fileName, const QString &filePath);
+    void copyToDownloadsError(const QVariantMap &downloadIds);
     void statsGetTotalViewsSuccessful(const QVariantMap &result);
     void statsGetTotalViewsError(const QString &errorMessage);
 
@@ -73,12 +77,15 @@ public slots:
     void handlePeopleGetPhotosError(QNetworkReply::NetworkError error);
     void handleDownloadError(QNetworkReply::NetworkError error);
     void handleDownloadFinished();
+    void handleDownloadProgress(qint64 bytesSent, qint64 bytesTotal);
     void handleStatsGetTotalViewsSuccessful();
     void handleStatsGetTotalViewsError(QNetworkReply::NetworkError error);
 
 private:
     QVariantMap getDownloadIds(const QNetworkRequest &request);
-    QString getDownloadFilePath(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
+    QString getCacheFilePath(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
+    QString getDownloadFilePath(const QString &id);
+    QString getDownloadFileName(const QString &id);
 
     O1Requestor *requestor;
     QNetworkAccessManager *manager;

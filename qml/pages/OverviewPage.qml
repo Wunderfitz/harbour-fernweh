@@ -501,7 +501,7 @@ Page {
                                     MouseArea {
                                         anchors.fill: parent
                                         onClicked: {
-                                            // TODO: Open Image page
+                                            pageStack.push(Qt.resolvedUrl("../pages/ImagePage.qml"), { "photoData" : display });
                                         }
                                     }
                                 }

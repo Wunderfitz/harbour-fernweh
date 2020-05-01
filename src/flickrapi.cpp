@@ -110,7 +110,7 @@ void FlickrApi::peopleGetPhotos(const QString &userId, const int &page)
 void FlickrApi::downloadPhoto(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size)
 {
     qDebug() << "FlickrApi::downloadPhoto" << farm << server << id << secret << size;
-    QUrl url = QUrl("https://farm" + farm + ".staticflickr.com/" + server + "/" + id + "_" + secret + ".jpg");
+    QUrl url = QUrl("https://farm" + farm + ".staticflickr.com/" + server + "/" + id + "_" + secret + "_" + size + ".jpg");
     QNetworkRequest request(url);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
     request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Wayland; SailfishOS) Piepmatz (Not Firefox/42.0)");
@@ -124,7 +124,7 @@ void FlickrApi::downloadPhoto(const QString &farm, const QString &server, const 
     request.setRawHeader(QByteArray(CUSTOM_HEADER_SECRET), secret.toUtf8());
     request.setRawHeader(QByteArray(CUSTOM_HEADER_SIZE), size.toUtf8());
 
-    QString filePath = this->getDownloadFilePath(farm, server, id, secret, size);
+    QString filePath = this->getCacheFilePath(farm, server, id, secret, size);
 
     if (QFile::exists(filePath)) {
         emit downloadSuccessful(this->getDownloadIds(request), filePath);
@@ -133,6 +133,24 @@ void FlickrApi::downloadPhoto(const QString &farm, const QString &server, const 
         connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleDownloadError(QNetworkReply::NetworkError)));
         connect(reply, SIGNAL(finished()), this, SLOT(handleDownloadFinished()));
     }
+}
+
+void FlickrApi::copyPhotoToDownloads(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size)
+{
+    QString downloadFilePath = this->getDownloadFilePath(id);
+    QString downloadFileName = this->getDownloadFileName(id);
+    QVariantMap downloadIds;
+    downloadIds.insert("farm", farm);
+    downloadIds.insert("server", server);
+    downloadIds.insert("id", id);
+    downloadIds.insert("secret", secret);
+    downloadIds.insert("photoSize", size);
+    if (QFile::copy(this->getCacheFilePath(farm, server, id, secret, size), downloadFilePath)) {
+        emit copyToDownloadsSuccessful(downloadIds, downloadFileName, downloadFilePath);
+    } else {
+        emit copyToDownloadsError(downloadIds);
+    }
+
 }
 
 void FlickrApi::statsGetTotalViews()
@@ -277,7 +295,7 @@ void FlickrApi::handleDownloadFinished()
         cachePath.mkpath(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
     }
 
-    QString filePath = this->getDownloadFilePath(downloadIds.value("farm").toString(),
+    QString filePath = this->getCacheFilePath(downloadIds.value("farm").toString(),
                                                  downloadIds.value("server").toString(),
                                                  downloadIds.value("id").toString(),
                                                  downloadIds.value("secret").toString(),
@@ -292,6 +310,20 @@ void FlickrApi::handleDownloadFinished()
     } else {
         emit downloadError(downloadIds, "Error storing file at " + filePath + ", error was: " + downloadedFile.errorString());
     }
+}
+
+void FlickrApi::handleDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
+    if (reply->error() != QNetworkReply::NoError) {
+        return;
+    }
+
+    QVariantMap downloadIds = this->getDownloadIds(reply->request());
+
+    int percentCompleted = 100 * bytesSent / bytesTotal;
+    emit downloadStatus(downloadIds, percentCompleted);
 }
 
 void FlickrApi::handleStatsGetTotalViewsSuccessful()
@@ -330,7 +362,7 @@ QVariantMap FlickrApi::getDownloadIds(const QNetworkRequest &request)
     return downloadIds;
 }
 
-QString FlickrApi::getDownloadFilePath(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size)
+QString FlickrApi::getCacheFilePath(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size)
 {
     QString filePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1Char('/') + farm + "_"
                                                                                                           + server + "_"
@@ -338,4 +370,15 @@ QString FlickrApi::getDownloadFilePath(const QString &farm, const QString &serve
                                                                                                           + secret + "_"
                                                                                                           + size + ".jpg";
     return filePath;
+}
+
+QString FlickrApi::getDownloadFilePath(const QString &id)
+{
+    QString filePath = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation) + QLatin1Char('/') + this->getDownloadFileName(id);
+    return filePath;
+}
+
+QString FlickrApi::getDownloadFileName(const QString &id)
+{
+    return "flickr_" + id + ".jpg";
 }
