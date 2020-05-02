@@ -505,10 +505,21 @@ Page {
                                         }
                                     }
                                 }
-                                ImageProgressIndicator {
-                                    image: singleOwnImage
-                                    small: true
+
+                                Image {
+                                    id: imageLoadingBackgroundImage
+                                    source: "../../images/background" + ( Theme.colorScheme ? "-black" : "-white" ) + ".png"
+                                    anchors {
+                                        centerIn: parent
+                                    }
+                                    width: parent.width - 2 * Theme.paddingLarge
+                                    height: parent.height - 2 * Theme.paddingLarge
+                                    visible: singleOwnImage.status !== Image.Ready
+
+                                    fillMode: Image.PreserveAspectFit
+                                    opacity: 0.15
                                 }
+
                             }
 
                             onMovementEnded: {

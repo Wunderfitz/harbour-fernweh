@@ -54,14 +54,5 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         visible: backgroundProgressIndicator.progress < 100 ? true : false
     }
-    Text {
-        id: imageErrorText
-        font.pixelSize: Theme.fontSizeExtraSmall
-        color: Theme.secondaryColor
-        text: qsTr("Error")
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
-        visible: backgroundProgressIndicator.progress < 100 ? true : false
-    }
 
 }

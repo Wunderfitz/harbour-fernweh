@@ -21,6 +21,7 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <QDir>
+#include <QImage>
 
 FlickrApi::FlickrApi(O1Requestor *requestor, QNetworkAccessManager *manager, QObject *parent) : QObject(parent)
 {
@@ -127,7 +128,11 @@ void FlickrApi::downloadPhoto(const QString &farm, const QString &server, const 
     QString filePath = this->getCacheFilePath(farm, server, id, secret, size);
 
     if (QFile::exists(filePath)) {
-        emit downloadSuccessful(this->getDownloadIds(request), filePath);
+        QVariantMap downloadIds = this->getDownloadIds(request);
+        QImage downloadedImage(filePath);
+        downloadIds.insert("width", downloadedImage.width());
+        downloadIds.insert("height", downloadedImage.height());
+        emit downloadSuccessful(downloadIds, filePath);
     } else {
         QNetworkReply *reply = manager->get(request);
         connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleDownloadError(QNetworkReply::NetworkError)));
@@ -305,6 +310,9 @@ void FlickrApi::handleDownloadFinished()
     if (downloadedFile.open(QIODevice::WriteOnly)) {
         qDebug() << "Writing downloaded file to " + downloadedFile.fileName();
         downloadedFile.write(reply->readAll());
+        QImage downloadedImage(filePath);
+        downloadIds.insert("width", downloadedImage.width());
+        downloadIds.insert("height", downloadedImage.height());
         downloadedFile.close();
         emit downloadSuccessful(downloadIds, filePath);
     } else {

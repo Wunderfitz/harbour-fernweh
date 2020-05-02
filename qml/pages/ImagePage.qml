@@ -51,47 +51,47 @@ Page {
     property real oldCenterX;
     property real oldCenterY;
 
+    Component.onCompleted: {
+        flickrApi.downloadPhoto(photoData.farm, photoData.server, photoData.id, photoData.secret, "b")
+    }
+
+    Connections {
+        target: flickrApi
+        onDownloadSuccessful: {
+            if (String(downloadIds.farm) === String(photoData.farm) &&
+                String(downloadIds.server) === String(photoData.server) &&
+                String(downloadIds.id) === String(photoData.id) &&
+                String(downloadIds.photoSize) === "b") {
+                imagePage.imageUrl = filePath;
+                imagePage.progress = 100;
+                imagePage.imageWidth = downloadIds.width;
+                imagePage.imageHeight = downloadIds.height;
+            }
+        }
+        onDownloadError: {
+            if (String(downloadIds.farm) === String(photoData.farm) &&
+                String(downloadIds.server) === String(photoData.server) &&
+                String(downloadIds.id) === String(photoData.id) &&
+                String(downloadIds.photoSize) === "b") {
+
+            }
+        }
+        onDownloadStatus:{
+            if (String(downloadIds.farm) === String(photoData.farm) &&
+                String(downloadIds.server) === String(photoData.server) &&
+                String(downloadIds.id) === String(photoData.id) &&
+                String(downloadIds.photoSize) === "b") {
+                imagePage.progress = percentCompleted;
+            }
+        }
+    }
+
     SilicaFlickable {
         id: imageFlickable
         anchors.fill: parent
-        contentWidth: imagePinchArea.width
-        contentHeight: imagePinchArea.height
         clip: true
-
-        Component.onCompleted: {
-            flickrApi.downloadPhoto(photoData.farm, photoData.server, photoData.id, photoData.secret, "b")
-        }
-
-        Connections {
-            target: flickrApi
-            onDownloadSuccessful: {
-                if (String(downloadIds.farm) === String(photoData.farm) &&
-                    String(downloadIds.server) === String(photoData.server) &&
-                    String(downloadIds.id) === String(photoData.id) &&
-                    String(downloadIds.photoSize) === "b") {
-                    imagePage.imageUrl = filePath;
-                    imagePage.progress = 100;
-                    imagePinchArea.width = Math.max( singleImage.width * singleImage.scale, imageFlickable.width );
-                    imagePinchArea.height = Math.max( singleImage.height * singleImage.scale, imageFlickable.height );
-                }
-            }
-            onDownloadError: {
-                if (String(downloadIds.farm) === String(photoData.farm) &&
-                    String(downloadIds.server) === String(photoData.server) &&
-                    String(downloadIds.id) === String(photoData.id) &&
-                    String(downloadIds.photoSize) === "b") {
-
-                }
-            }
-            onDownloadStatus:{
-                if (String(downloadIds.farm) === String(photoData.farm) &&
-                    String(downloadIds.server) === String(photoData.server) &&
-                    String(downloadIds.id) === String(photoData.id) &&
-                    String(downloadIds.photoSize) === "b") {
-                    imagePage.progress = percentCompleted;
-                }
-            }
-        }
+        contentWidth: imagePinchArea.width;
+        contentHeight: imagePinchArea.height;
 
         PullDownMenu {
             visible: photoData ? true : false
@@ -171,14 +171,15 @@ Page {
                         imageFlickable.contentY = imageFlickable.contentY + ( yRatioNew * heightDifference );
                     }
 
-
                     imagePage.previousScale = singleImage.scale;
                     imagePage.oldCenterX = imagePage.centerX;
                     imagePage.oldCenterY = imagePage.centerY;
                 }
             }
         }
+
     }
+
 
     BackgroundProgressIndicator {
         progress: imagePage.progress

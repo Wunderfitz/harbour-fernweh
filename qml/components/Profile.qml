@@ -136,7 +136,7 @@ Item {
                     Text {
                         id: profileDescriptionText
                         text: profileModel.person.description._content
-                        horizontalAlignment: Text.AlignHCenter
+                        //horizontalAlignment: Text.AlignHCenter
                         font {
                             pixelSize: componentFontSize
                             italic: true
@@ -160,7 +160,7 @@ Item {
                         id: profilePicturesCountText
                         text: qsTr("%1 Photos").arg(Number(profileModel.person.photos.count._content).toLocaleString(Qt.locale(), "f", 0))
                         font.pixelSize: componentFontSize
-                        horizontalAlignment: Text.AlignHCenter
+                        //horizontalAlignment: Text.AlignHCenter
                         color: Theme.primaryColor
                         wrapMode: Text.Wrap
                         width: parent.width
@@ -179,7 +179,7 @@ Item {
                         id: profileJoinedText
                         text: qsTr("Joined in %1").arg(Functions.getDateFromTimestamp(profileModel.person.photos.firstdate._content).toLocaleDateString(Qt.locale(), "MMMM yyyy"))
                         font.pixelSize: componentFontSize
-                        horizontalAlignment: Text.AlignHCenter
+                        //horizontalAlignment: Text.AlignHCenter
                         color: Theme.primaryColor
                         wrapMode: Text.NoWrap
                         width: parent.width
