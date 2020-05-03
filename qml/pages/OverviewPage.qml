@@ -459,83 +459,21 @@ Page {
 
                             model: ownPhotosModel
 
-                            delegate:  Item {
+                            delegate:  PhotoThumbnail {
+                                photoData: display
                                 width: ownPhotosGridView.cellWidth
                                 height: ownPhotosGridView.cellHeight
-
-                                property string photoId: display.id;
-
-                                Connections {
-                                    target: flickrApi
-                                    onDownloadSuccessful: {
-                                        if (String(downloadIds.farm) === String(display.farm) &&
-                                            String(downloadIds.server) === String(display.server) &&
-                                            String(downloadIds.id) === String(display.id) &&
-                                            String(downloadIds.photoSize) === "n") {
-                                            singleOwnImage.source = filePath;
-                                        }
-                                    }
-                                    onDownloadError: {
-                                        if (String(downloadIds.farm) === String(display.farm) &&
-                                            String(downloadIds.server) === String(display.server) &&
-                                            String(downloadIds.id) === String(display.id) &&
-                                            String(downloadIds.photoSize) === "n") {
-
-                                        }
-                                    }
-                                }
-
-                                Image {
-
-                                    Component.onCompleted: {
-                                        flickrApi.downloadPhoto(display.farm, display.server, display.id, display.secret, "n")
-                                    }
-
-                                    id: singleOwnImage
-                                    width: parent.width - Theme.paddingSmall
-                                    height: parent.height - Theme.paddingSmall
-                                    anchors.centerIn: parent
-
-                                    fillMode: Image.PreserveAspectCrop
-                                    autoTransform: true
-                                    asynchronous: true
-                                    MouseArea {
-                                        anchors.fill: parent
-                                        onClicked: {
-                                            pageStack.push(Qt.resolvedUrl("../pages/ImagePage.qml"), { "photoData" : display });
-                                        }
-                                    }
-                                }
-
-                                Image {
-                                    id: imageLoadingBackgroundImage
-                                    source: "../../images/background" + ( Theme.colorScheme ? "-black" : "-white" ) + ".png"
-                                    anchors {
-                                        centerIn: parent
-                                    }
-                                    width: parent.width - 2 * Theme.paddingLarge
-                                    height: parent.height - 2 * Theme.paddingLarge
-                                    visible: singleOwnImage.status !== Image.Ready
-
-                                    fillMode: Image.PreserveAspectFit
-                                    opacity: 0.15
-                                }
-
                             }
 
                             onMovementEnded: {
-                                ownPhotosModel.setCurrentPhotoId(ownPhotosGridView.itemAt((ownPhotosGridView.contentX + Math.round(overviewPage.width / 2)), (ownPhotosGridView.contentY + Math.round(overviewPage.height * 3 / 4))).photoId);
+                                ownPhotosModel.setCurrentPhotoId(ownPhotosGridView.itemAt((ownPhotosGridView.contentX + Math.round(overviewPage.width / 2)), (ownPhotosGridView.contentY + Math.round(overviewPage.height * 3 / 4))).photoData.id);
                             }
 
                             onQuickScrollAnimatingChanged: {
                                 if (!quickScrollAnimating) {
-                                    ownPhotosModel.setCurrentPhotoId(ownPhotosGridView.itemAt((ownPhotosGridView.contentX + Math.round(overviewPage.width / 2)), (ownPhotosGridView.contentY + Math.round(overviewPage.height * 3 / 4))).photoId);
+                                    ownPhotosModel.setCurrentPhotoId(ownPhotosGridView.itemAt((ownPhotosGridView.contentX + Math.round(overviewPage.width / 2)), (ownPhotosGridView.contentY + Math.round(overviewPage.height * 3 / 4))).photoData.id);
                                 }
                             }
-
-//                            onCurrentIndexChanged: {
-//                                ownPhotosModel.setCurrentPhotoId(currentItem.photoId);
-//                            }
 
                             footer: ownPicturesFooterComponent;
 

@@ -43,17 +43,17 @@ ListItem {
     Connections {
         target: flickrApi
         onDownloadSuccessful: {
-            if (String(downloadIds.farm) === String(display.farm) &&
-                String(downloadIds.server) === String(display.server) &&
-                String(downloadIds.id) === String(display.primary) &&
+            if (String(downloadIds.farm) === String(albumModel.farm) &&
+                String(downloadIds.server) === String(albumModel.server) &&
+                String(downloadIds.id) === String(albumModel.primary) &&
                 String(downloadIds.photoSize) === "n") {
                 albumPicture.source = filePath;
             }
         }
         onDownloadError: {
-            if (String(downloadIds.farm) === String(display.farm) &&
-                String(downloadIds.server) === String(display.server) &&
-                String(downloadIds.id) === String(display.primary) &&
+            if (String(downloadIds.farm) === String(albumModel.farm) &&
+                String(downloadIds.server) === String(albumModel.server) &&
+                String(downloadIds.id) === String(albumModel.primary) &&
                 String(downloadIds.photoSize) === "n") {
 
             }
@@ -61,14 +61,14 @@ ListItem {
     }
 
     Component.onCompleted: {
-        flickrApi.downloadPhoto(display.farm, display.server, display.primary, display.secret, "n")
+        flickrApi.downloadPhoto(albumModel.farm, albumModel.server, albumModel.primary, albumModel.secret, "n")
     }
 
     contentHeight: albumRow.height + albumSeparator.height + 2 * Theme.paddingMedium
     contentWidth: parent.width
 
     onClicked: {
-        pageStack.push(Qt.resolvedUrl("../pages/AlbumPage.qml"), {"albumModel": albumModel});
+        pageStack.push(Qt.resolvedUrl("../pages/AlbumPhotosPage.qml"), {"albumModel": albumModel});
     }
 
     menu: ContextMenu {
@@ -186,7 +186,7 @@ ListItem {
 
                 Text {
                     id: albumDescriptionText
-                    text: qsTr("%1 photos").arg(display.count_photos)
+                    text: qsTr("%1 photos").arg(albumModel.count_photos)
                     font.pixelSize: componentFontSize
                     color: Theme.primaryColor
                     wrapMode: Text.Wrap
