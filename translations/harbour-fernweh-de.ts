@@ -185,6 +185,14 @@
         <source>Load more albums</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>No more interesting photos found. Well, that&apos;s sad... :(</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load more pictures</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OwnAlbumsButton</name>

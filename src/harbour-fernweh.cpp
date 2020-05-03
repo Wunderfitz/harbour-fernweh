@@ -32,6 +32,7 @@
 #include "flickrapi.h"
 #include "ownphotosmodel.h"
 #include "ownalbumsmodel.h"
+#include "interestingnessmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -51,6 +52,9 @@ int main(int argc, char *argv[])
 
     OwnAlbumsModel ownAlbumsModel(flickrApi);
     context->setContextProperty("ownAlbumsModel", &ownAlbumsModel);
+
+    InterestingnessModel interestingnessModel(flickrApi);
+    context->setContextProperty("interestingnessModel", &interestingnessModel);
 
     view->setSource(SailfishApp::pathTo("qml/harbour-fernweh.qml"));
     view->show();

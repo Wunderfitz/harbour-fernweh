@@ -69,7 +69,6 @@ void OwnAlbumsModel::update()
 void OwnAlbumsModel::loadMore()
 {
     qDebug() << "OwnAlbumsModel::loadMore";
-    emit ownAlbumsStartUpdate();
     flickrApi->photosetsGetList("", this->currentPage + 1);
 }
 

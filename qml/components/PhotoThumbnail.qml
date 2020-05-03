@@ -50,6 +50,7 @@ Item {
     Image {
 
         Component.onCompleted: {
+            JSON.stringify(photoData);
             flickrApi.downloadPhoto(photoData.farm, photoData.server, photoData.id, photoData.secret, "n");
         }
 

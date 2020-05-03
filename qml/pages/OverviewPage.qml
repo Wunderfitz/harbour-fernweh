@@ -195,6 +195,7 @@ Page {
                 ownPhotosModel.update();
                 flickrApi.statsGetTotalViews();
                 ownAlbumsModel.update();
+                interestingnessModel.update();
             }
         }
         onTestLoginError: {
@@ -542,21 +543,21 @@ Page {
 
                         Connections {
                             target: ownAlbumsModel
-                            onOwnPhotosStartUpdate: {
+                            onOwnAlbumsStartUpdate: {
                                 ownAlbumsListView.currentIndex = -1;
                                 ownAlbumsListView.footer = ownAlbumsFooterComponent;
                                 ownAlbumsColumn.updateInProgress = true;
                             }
 
-                            onOwnPhotosUpdated: {
+                            onOwnAlbumsUpdated: {
                                 ownAlbumsListView.currentIndex = modelIndex;
                                 ownAlbumsColumn.updateInProgress = false;
                             }
-                            onOwnPhotosError: {
+                            onOwnAlbumsError: {
                                 ownAlbumsColumn.updateInProgress = false;
                                 overviewNotification.show(errorMessage);
                             }
-                            onOwnPhotosEndReached: {
+                            onOwnAlbumsEndReached: {
                                 ownAlbumsListView.footer = null;
                                 overviewNotification.show(qsTr("No albums found. Upload more albums to see more here! ;)"));
                             }
@@ -650,46 +651,47 @@ Page {
 
                         property bool updateInProgress : false;
 
-//                        Connections {
-
-//                            target: directMessagesModel
-
-//                            onUpdateMessagesStarted: {
-//                                interestingnessColumn.updateInProgress = true;
-//                            }
-
-//                            onUpdateMessagesFinished: {
-//                                interestingnessColumn.updateInProgress = false;
-//                            }
-
-//                            onUpdateMessagesError: {
-//                                interestingnessColumn.updateInProgress = false;
-//                                overviewNotification.show(errorMessage);
-//                            }
-//                        }
-
-                        SilicaListView {
-                            anchors {
-                                fill: parent
+                        Connections {
+                            target: interestingnessModel
+                            onInterestingnessStartUpdate: {
+                                interestingnessGridView.currentIndex = -1;
+                                interestingnessGridView.footer = interestingnessFooterComponent;
+                                interestingnessColumn.updateInProgress = true;
                             }
-                            id: interestingnessListView
+
+                            onInterestingnessUpdated: {
+                                interestingnessGridView.currentIndex = modelIndex;
+                                interestingnessColumn.updateInProgress = false;
+                            }
+                            onInterestingnessError: {
+                                interestingnessColumn.updateInProgress = false;
+                                overviewNotification.show(errorMessage);
+                            }
+                            onInterestingnessEndReached: {
+                                interestingnessGridView.footer = null;
+                                overviewNotification.show(qsTr("No more interesting photos found. Well, that's sad... :("));
+                            }
+                        }
+
+                        SilicaGridView {
+                            id: interestingnessGridView
+
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: parent.height
+                            cellWidth: width / 3;
+                            cellHeight: width / 3;
 
                             clip: true
 
-                            model: directMessagesModel
-                            delegate: ListItem {
-
-                                id: messageContactItem
-
-                                contentHeight: messageContactRow.height + messageContactSeparator.height + 2 * Theme.paddingMedium
-                                contentWidth: parent.width
-
-//                                onClicked: {
-//                                    pageStack.push(Qt.resolvedUrl("../pages/ConversationPage.qml"), { "conversationModel" : display, "myUserId": overviewPage.myUser.id_str, "configuration": overviewPage.configuration });
-//                                }
-
+                            model: interestingnessModel
+                            delegate: PhotoThumbnail {
+                                photoData: display
+                                width: interestingnessGridView.cellWidth
+                                height: interestingnessGridView.cellHeight
                             }
 
+                            footer: interestingnessFooterComponent
 
                             VerticalScrollDecorator {}
                         }
@@ -711,6 +713,47 @@ Page {
                                 opacity: interestingnessColumn.updateInProgress ? 1 : 0
                                 height: parent.height
                                 width: parent.width
+                            }
+                        }
+
+                        Component {
+                            id: interestingnessFooterComponent
+                            Item {
+                                id: interestingnessLoadMoreRow
+                                width: overviewPage.width
+                                height: interestingnessLoadMoreButton.height + ( 2 * Theme.paddingLarge )
+                                Button {
+                                    id: interestingnessLoadMoreButton
+                                    Behavior on opacity { NumberAnimation {} }
+                                    text: qsTr("Load more pictures")
+                                    preferredWidth: Theme.buttonWidthLarge
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    opacity: visible ? 1 : 0
+                                    onClicked: {
+                                        console.log("Loading more interesting pictures...");
+                                        interestingnessModel.loadMore();
+                                        interestingnessLoadMoreBusyIndicator.visible = true;
+                                        interestingnessLoadMoreButton.visible = false;
+                                    }
+                                }
+                                BusyIndicator {
+                                    id: interestingnessLoadMoreBusyIndicator
+                                    Behavior on opacity { NumberAnimation {} }
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: false
+                                    opacity: visible ? 1 : 0
+                                    running: visible
+                                    size: BusyIndicatorSize.Medium
+                                }
+                                Connections {
+                                    target: interestingnessModel
+                                    onInterestingnessAppended: {
+                                        interestingnessLoadMoreBusyIndicator.visible = false;
+                                        interestingnessLoadMoreButton.visible = true;
+                                    }
+                                }
                             }
                         }
 

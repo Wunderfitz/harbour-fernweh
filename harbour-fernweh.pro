@@ -21,6 +21,7 @@ include(src/o2/o2.pri)
 SOURCES += src/harbour-fernweh.cpp \
     src/flickraccount.cpp \
     src/flickrapi.cpp \
+    src/interestingnessmodel.cpp \
     src/ownalbumsmodel.cpp \
     src/ownphotosmodel.cpp
 
@@ -75,5 +76,6 @@ TRANSLATIONS += translations/harbour-fernweh-de.ts
 HEADERS += \
     src/flickraccount.h \
     src/flickrapi.h \
+    src/interestingnessmodel.h \
     src/ownalbumsmodel.h \
     src/ownphotosmodel.h
