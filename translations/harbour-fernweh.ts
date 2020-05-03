@@ -234,6 +234,10 @@
         <source>&lt;b&gt;Collection Views:&lt;/b&gt; %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>n/a</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ProfileButton</name>
@@ -281,18 +285,6 @@
     </message>
     <message>
         <source>Large (Sailfish OS default)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Behavior</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open-with menu integration</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Integrate Fernweh into open-with menu of Sailfish OS</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

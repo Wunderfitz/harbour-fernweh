@@ -40,8 +40,6 @@ public:
     Q_INVOKABLE bool isLinked();
     Q_INVOKABLE bool getUseSwipeNavigation();
     Q_INVOKABLE void setUseSwipeNavigation(const bool &useSwipeNavigation);
-    Q_INVOKABLE bool getUseOpenWith();
-    Q_INVOKABLE void setUseOpenWith(const bool &useOpenWith);
     Q_INVOKABLE QString getFontSize();
     Q_INVOKABLE void setFontSize(const QString &fontSize);
 

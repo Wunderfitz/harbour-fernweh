@@ -833,10 +833,6 @@ Page {
                             visible: !searchColumn.photoSearchInProgress ? true : false
                             Behavior on opacity { NumberAnimation {} }
 
-                            onVisibleChanged: {
-                                console.log("Grid view visible: " + visible);
-                            }
-
                             clip: true
 
                             model: searchPhotosModel
@@ -858,10 +854,6 @@ Page {
                             Behavior on opacity { NumberAnimation {} }
                             opacity: searchColumn.photoSearchInProgress ? 1 : 0
                             visible: searchColumn.photoSearchInProgress ? true : false
-
-                            onVisibleChanged: {
-                                console.log("Search in progress visible: " + visible);
-                            }
 
                             BusyIndicator {
                                 id: searchInProgressIndicator
@@ -889,13 +881,6 @@ Page {
                             Behavior on opacity { NumberAnimation {} }
                             opacity: searchResultsGridView.count === 0 && !searchColumn.photoSearchInProgress ? 1 : 0
                             visible: searchResultsGridView.count === 0 && !searchColumn.photoSearchInProgress ? true : false
-
-                            // opacity: ( ((!searchColumn.usersSearchSelected && searchResultsGridView.count === 0) || (searchColumn.usersSearchSelected && userssearchResultsGridView.count === 0)) && !( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress ) && searchField.text !== "" ) ? 1 : 0
-                            // visible: ( ((!searchColumn.usersSearchSelected && searchResultsGridView.count === 0) || (searchColumn.usersSearchSelected && userssearchResultsGridView.count === 0)) && !( searchColumn.usersSearchInProgress || searchColumn.tweetSearchInProgress ) && searchField.text !== "" ) ? true : false
-
-                            onVisibleChanged: {
-                                console.log("No results visible: " + visible);
-                            }
 
                             Image {
                                 id: searchNoResultsImage

@@ -70,19 +70,6 @@ Page {
                 }
             }
 
-            SectionHeader {
-                text: qsTr("Behavior")
-            }
-
-            TextSwitch {
-                checked: flickrAccount.getUseOpenWith()
-                text: qsTr("Open-with menu integration")
-                description: qsTr("Integrate Fernweh into open-with menu of Sailfish OS")
-                onCheckedChanged: {
-                    flickrAccount.setUseOpenWith(checked);
-                }
-            }
-
             Label {
                 id: separatorLabel
                 x: Theme.horizontalPageMargin
