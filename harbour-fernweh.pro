@@ -21,9 +21,11 @@ include(src/o2/o2.pri)
 SOURCES += src/harbour-fernweh.cpp \
     src/flickraccount.cpp \
     src/flickrapi.cpp \
+    src/ownalbumsmodel.cpp \
     src/ownphotosmodel.cpp
 
 DISTFILES += qml/harbour-fernweh.qml \
+    qml/components/Album.qml \
     qml/components/BackgroundProgressIndicator.qml \
     qml/pages/*.qml \
     qml/components/*.qml \
@@ -71,4 +73,5 @@ TRANSLATIONS += translations/harbour-fernweh-de.ts
 HEADERS += \
     src/flickraccount.h \
     src/flickrapi.h \
+    src/ownalbumsmodel.h \
     src/ownphotosmodel.h

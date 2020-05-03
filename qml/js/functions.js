@@ -38,6 +38,11 @@ function getUrlForPhoto(photo) {
     return url;
 }
 
+function getUrlForAlbumPhoto(album) {
+    var url = "https://farm" + album.farm + ".static.flickr.com/" + album.server + "/" + album.primary + "_" + album.secret + "_m.jpg";
+    return url;
+}
+
 // =============== TWITTER STUFF BEGINS HERE=======================
 
 function updateFernweh() {

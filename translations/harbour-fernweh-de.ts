@@ -53,6 +53,17 @@
     </message>
 </context>
 <context>
+    <name>Album</name>
+    <message>
+        <source>Copy URL to Clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 photos</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>BackgroundProgressIndicator</name>
     <message>
         <source>%1 %</source>
@@ -127,10 +138,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>follows you now!</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Search on Flickr...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -167,7 +174,15 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Load more pictures</source>
+        <source>No albums found. Upload more albums to see more here! ;)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load more photos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load more albums</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

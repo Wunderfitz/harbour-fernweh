@@ -194,6 +194,7 @@ Page {
                 flickrApi.peopleGetInfo(overviewPage.myLoginData.user.id);
                 ownPhotosModel.update();
                 flickrApi.statsGetTotalViews();
+                ownAlbumsModel.update();
             }
         }
         onTestLoginError: {
@@ -551,7 +552,7 @@ Page {
                                 Button {
                                     id: ownPicturesLoadMoreButton
                                     Behavior on opacity { NumberAnimation {} }
-                                    text: qsTr("Load more pictures")
+                                    text: qsTr("Load more photos")
                                     preferredWidth: Theme.buttonWidthLarge
                                     anchors.verticalCenter: parent.verticalCenter
                                     anchors.horizontalCenter: parent.horizontalCenter
@@ -601,17 +602,27 @@ Page {
 
                         property bool updateInProgress : false;
 
-//                        Connections {
+                        Connections {
+                            target: ownAlbumsModel
+                            onOwnPhotosStartUpdate: {
+                                ownAlbumsListView.currentIndex = -1;
+                                ownAlbumsListView.footer = ownAlbumsFooterComponent;
+                                ownAlbumsColumn.updateInProgress = true;
+                            }
 
-//                            target: mentionsModel
-//                            onUpdateMentionsFinished: {
-//                                ownAlbumsColumn.updateInProgress = false;
-//                            }
-//                            onUpdateMentionsError: {
-//                                ownAlbumsColumn.updateInProgress = false;
-//                                overviewNotification.show(errorMessage);
-//                            }
-//                        }
+                            onOwnPhotosUpdated: {
+                                ownAlbumsListView.currentIndex = modelIndex;
+                                ownAlbumsColumn.updateInProgress = false;
+                            }
+                            onOwnPhotosError: {
+                                ownAlbumsColumn.updateInProgress = false;
+                                overviewNotification.show(errorMessage);
+                            }
+                            onOwnPhotosEndReached: {
+                                ownAlbumsListView.footer = null;
+                                overviewNotification.show(qsTr("No albums found. Upload more albums to see more here! ;)"));
+                            }
+                        }
 
                         SilicaListView {
                             anchors {
@@ -621,21 +632,12 @@ Page {
 
                             clip: true
 
-                            model: mentionsModel
-                            delegate: Component {
-                                Loader {
-                                    width: ownAlbumsListView.width
-                                    property variant mentionsData: display
-                                    property bool isRetweet : display.retweeted_status ? (( display.retweeted_status.user.id_str === overviewPage.myUser.id_str ) ? true : false ) : false
-
-                                    sourceComponent: if (display.followed_at) {
-                                                         mentionsData.description = qsTr("follows you now!");
-                                                         return componentMentionsUser;
-                                                     } else {
-                                                         return componentMentionsTweet;
-                                                     }
-                                }
+                            model: ownAlbumsModel
+                            delegate: Album {
+                                albumModel: display
                             }
+
+                            footer: ownAlbumsFooterComponent;
 
                             VerticalScrollDecorator {}
                         }
@@ -657,6 +659,47 @@ Page {
                                 opacity: ownAlbumsColumn.updateInProgress ? 1 : 0
                                 height: parent.height
                                 width: parent.width
+                            }
+                        }
+
+                        Component {
+                            id: ownAlbumsFooterComponent
+                            Item {
+                                id: ownAlbumsLoadMoreRow
+                                width: overviewPage.width
+                                height: ownAlbumsLoadMoreButton.height + ( 2 * Theme.paddingLarge )
+                                Button {
+                                    id: ownAlbumsLoadMoreButton
+                                    Behavior on opacity { NumberAnimation {} }
+                                    text: qsTr("Load more albums")
+                                    preferredWidth: Theme.buttonWidthLarge
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    opacity: visible ? 1 : 0
+                                    onClicked: {
+                                        console.log("Loading more albums...");
+                                        ownAlbumsModel.loadMore();
+                                        ownAlbumsLoadMoreBusyIndicator.visible = true;
+                                        ownAlbumsLoadMoreButton.visible = false;
+                                    }
+                                }
+                                BusyIndicator {
+                                    id: ownAlbumsLoadMoreBusyIndicator
+                                    Behavior on opacity { NumberAnimation {} }
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: false
+                                    opacity: visible ? 1 : 0
+                                    running: visible
+                                    size: BusyIndicatorSize.Medium
+                                }
+                                Connections {
+                                    target: ownAlbumsModel
+                                    onOwnAlbumsAppended: {
+                                        ownAlbumsLoadMoreBusyIndicator.visible = false;
+                                        ownAlbumsLoadMoreButton.visible = true;
+                                    }
+                                }
                             }
                         }
 
