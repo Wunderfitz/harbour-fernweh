@@ -23,7 +23,8 @@ SOURCES += src/harbour-fernweh.cpp \
     src/flickrapi.cpp \
     src/interestingnessmodel.cpp \
     src/ownalbumsmodel.cpp \
-    src/ownphotosmodel.cpp
+    src/ownphotosmodel.cpp \
+    src/searchphotosmodel.cpp
 
 DISTFILES += qml/harbour-fernweh.qml \
     qml/components/Album.qml \
@@ -78,4 +79,5 @@ HEADERS += \
     src/flickrapi.h \
     src/interestingnessmodel.h \
     src/ownalbumsmodel.h \
-    src/ownphotosmodel.h
+    src/ownphotosmodel.h \
+    src/searchphotosmodel.h

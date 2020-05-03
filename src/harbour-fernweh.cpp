@@ -33,6 +33,7 @@
 #include "ownphotosmodel.h"
 #include "ownalbumsmodel.h"
 #include "interestingnessmodel.h"
+#include "searchphotosmodel.h"
 
 int main(int argc, char *argv[])
 {
@@ -55,6 +56,9 @@ int main(int argc, char *argv[])
 
     InterestingnessModel interestingnessModel(flickrApi);
     context->setContextProperty("interestingnessModel", &interestingnessModel);
+
+    SearchPhotosModel searchPhotosModel(flickrApi);
+    context->setContextProperty("searchPhotosModel", &searchPhotosModel);
 
     view->setSource(SailfishApp::pathTo("qml/harbour-fernweh.qml"));
     view->show();

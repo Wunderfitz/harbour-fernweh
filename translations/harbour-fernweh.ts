@@ -142,14 +142,6 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Pictures</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Users</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Searching...</source>
         <translation type="unfinished"></translation>
     </message>
