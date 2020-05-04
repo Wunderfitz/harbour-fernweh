@@ -118,6 +118,17 @@ Page {
                 text: qsTr("About Flickr")
             }
 
+            Label {
+                x: Theme.horizontalPageMargin
+                width: parent.width  - ( 2 * Theme.horizontalPageMargin )
+                text: qsTr("This product uses the Flickr API but is not endorsed or certified by SmugMug, Inc.")
+                font.pixelSize: Theme.fontSizeSmall
+                wrapMode: Text.Wrap
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                }
+            }
+
             Button {
                 id: flickrTosButton
                 text: qsTr("Terms of Service")
@@ -125,7 +136,7 @@ Page {
                     horizontalCenter: parent.horizontalCenter
                 }
                 onClicked: {
-                    pageStack.push(Qt.resolvedUrl("../pages/TextPage.qml"), {"contentId": "tos"});
+                    Qt.openUrlExternally("https://www.flickr.com/help/terms");
                 }
             }
 
@@ -136,7 +147,7 @@ Page {
                     horizontalCenter: parent.horizontalCenter
                 }
                 onClicked: {
-                    pageStack.push(Qt.resolvedUrl("../pages/TextPage.qml"), {"contentId": "privacy"});
+                    Qt.openUrlExternally("https://www.flickr.com/help/privacy")
                 }
             }
 

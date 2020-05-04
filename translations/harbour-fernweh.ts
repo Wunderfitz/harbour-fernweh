@@ -51,6 +51,10 @@
         <source>Open OAuth for Qt on GitHub</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>This product uses the Flickr API but is not endorsed or certified by SmugMug, Inc.</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Album</name>

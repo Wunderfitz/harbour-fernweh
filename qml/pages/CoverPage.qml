@@ -83,7 +83,6 @@ CoverBackground {
                 }
 
                 id: coverImage
-                source: media_url_https
                 width: parent.width
                 height: parent.height
                 fillMode: Image.PreserveAspectCrop
