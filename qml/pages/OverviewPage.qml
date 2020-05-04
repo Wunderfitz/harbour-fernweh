@@ -62,9 +62,9 @@ Page {
         return Theme.iconSizeMedium + Theme.fontSizeMedium + Theme.paddingMedium;
     }
 
-    function handleOwnPicturesClicked() {
+    function handleTrendingClicked() {
         if (overviewPage.activeTabId === 0) {
-            ownPicturesListView.scrollToTop();
+            interestingnessGridView.scrollToTop();
         } else {
             viewsSlideshow.opacity = 0;
             slideshowVisibleTimer.goToTab(0);
@@ -72,9 +72,9 @@ Page {
         }
     }
 
-    function handleOwnAlbumsClicked() {
+    function handleOwnPicturesClicked() {
         if (overviewPage.activeTabId === 1) {
-            ownAlbumsListView.scrollToTop();
+            ownPhotosGridView.scrollToTop();
         } else {
             viewsSlideshow.opacity = 0;
             slideshowVisibleTimer.goToTab(1);
@@ -82,10 +82,14 @@ Page {
         }
     }
 
-    function handleTrendingClicked() {
-        viewsSlideshow.opacity = 0;
-        slideshowVisibleTimer.goToTab(2);
-        openTab(2);
+    function handleOwnAlbumsClicked() {
+        if (overviewPage.activeTabId === 2) {
+            ownAlbumsListView.scrollToTop();
+        } else {
+            viewsSlideshow.opacity = 0;
+            slideshowVisibleTimer.goToTab(2);
+            openTab(2);
+        }
     }
 
     function handleSearchClicked() {
@@ -115,6 +119,18 @@ Page {
 
         switch (tabId) {
         case 0:
+            ownPicturesButtonPortrait.isActive = false;
+            ownPicturesButtonLandscape.isActive = false;
+            ownAlbumsButtonPortrait.isActive = false;
+            ownAlbumsButtonLandscape.isActive = false;
+            interestingnessButtonPortrait.isActive = true;
+            interestingnessButtonLandscape.isActive = true;
+            searchButtonPortrait.isActive = false;
+            searchButtonLandscape.isActive = false;
+            profileButtonPortrait.isActive = false;
+            profileButtonLandscape.isActive = false;
+            break;
+        case 1:
             ownPicturesButtonPortrait.isActive = true;
             ownPicturesButtonLandscape.isActive = true;
             ownAlbumsButtonPortrait.isActive = false;
@@ -126,25 +142,13 @@ Page {
             profileButtonPortrait.isActive = false;
             profileButtonLandscape.isActive = false;
             break;
-        case 1:
+        case 2:
             ownPicturesButtonPortrait.isActive = false;
             ownPicturesButtonLandscape.isActive = false;
             ownAlbumsButtonPortrait.isActive = true;
             ownAlbumsButtonLandscape.isActive = true;
             interestingnessButtonPortrait.isActive = false;
             interestingnessButtonLandscape.isActive = false;
-            searchButtonPortrait.isActive = false;
-            searchButtonLandscape.isActive = false;
-            profileButtonPortrait.isActive = false;
-            profileButtonLandscape.isActive = false;
-            break;
-        case 2:
-            ownPicturesButtonPortrait.isActive = false;
-            ownPicturesButtonLandscape.isActive = false;
-            ownAlbumsButtonPortrait.isActive = false;
-            ownAlbumsButtonLandscape.isActive = false;
-            interestingnessButtonPortrait.isActive = true;
-            interestingnessButtonLandscape.isActive = true;
             searchButtonPortrait.isActive = false;
             searchButtonLandscape.isActive = false;
             profileButtonPortrait.isActive = false;
@@ -384,6 +388,121 @@ Page {
 
                 VisualItemModel {
                     id: viewsModel
+
+                    Item {
+                        id: interestingnessColumn
+                        width: viewsSlideshow.width
+                        height: viewsSlideshow.height
+
+                        property bool updateInProgress : false;
+
+                        Connections {
+                            target: interestingnessModel
+                            onInterestingnessStartUpdate: {
+                                interestingnessGridView.currentIndex = -1;
+                                interestingnessGridView.footer = interestingnessFooterComponent;
+                                interestingnessColumn.updateInProgress = true;
+                            }
+
+                            onInterestingnessUpdated: {
+                                interestingnessGridView.currentIndex = modelIndex;
+                                interestingnessColumn.updateInProgress = false;
+                            }
+                            onInterestingnessError: {
+                                interestingnessColumn.updateInProgress = false;
+                                overviewNotification.show(errorMessage);
+                            }
+                            onInterestingnessEndReached: {
+                                interestingnessGridView.footer = null;
+                                overviewNotification.show(qsTr("No more interesting photos found. Well, that's sad... :("));
+                            }
+                        }
+
+                        SilicaGridView {
+                            id: interestingnessGridView
+
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: parent.height
+                            cellWidth: width / 3;
+                            cellHeight: width / 3;
+
+                            clip: true
+
+                            model: interestingnessModel
+                            delegate: PhotoThumbnail {
+                                photoData: display
+                                width: interestingnessGridView.cellWidth
+                                height: interestingnessGridView.cellHeight
+                            }
+
+                            footer: interestingnessFooterComponent
+
+                            VerticalScrollDecorator {}
+                        }
+
+                        Column {
+                            anchors {
+                                fill: parent
+                            }
+
+                            id: interestingnessUpdateInProgressColumn
+                            Behavior on opacity { NumberAnimation {} }
+                            opacity: interestingnessColumn.updateInProgress ? 1 : 0
+                            visible: interestingnessColumn.updateInProgress ? true : false
+
+                            LoadingIndicator {
+                                id: interestingnessLoadingIndicator
+                                visible: interestingnessColumn.updateInProgress
+                                Behavior on opacity { NumberAnimation {} }
+                                opacity: interestingnessColumn.updateInProgress ? 1 : 0
+                                height: parent.height
+                                width: parent.width
+                            }
+                        }
+
+                        Component {
+                            id: interestingnessFooterComponent
+                            Item {
+                                id: interestingnessLoadMoreRow
+                                width: overviewPage.width
+                                height: interestingnessLoadMoreButton.height + ( 2 * Theme.paddingLarge )
+                                Button {
+                                    id: interestingnessLoadMoreButton
+                                    Behavior on opacity { NumberAnimation {} }
+                                    text: qsTr("Load more pictures")
+                                    preferredWidth: Theme.buttonWidthLarge
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    opacity: visible ? 1 : 0
+                                    onClicked: {
+                                        console.log("Loading more interesting pictures...");
+                                        interestingnessModel.loadMore();
+                                        interestingnessLoadMoreBusyIndicator.visible = true;
+                                        interestingnessLoadMoreButton.visible = false;
+                                    }
+                                }
+                                BusyIndicator {
+                                    id: interestingnessLoadMoreBusyIndicator
+                                    Behavior on opacity { NumberAnimation {} }
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: false
+                                    opacity: visible ? 1 : 0
+                                    running: visible
+                                    size: BusyIndicatorSize.Medium
+                                }
+                                Connections {
+                                    target: interestingnessModel
+                                    onInterestingnessAppended: {
+                                        interestingnessLoadMoreBusyIndicator.visible = false;
+                                        interestingnessLoadMoreButton.visible = true;
+                                    }
+                                }
+                            }
+                        }
+
+                    }
 
                     Item {
                         id: ownPicturesView
@@ -637,121 +756,6 @@ Page {
                                     onOwnAlbumsAppended: {
                                         ownAlbumsLoadMoreBusyIndicator.visible = false;
                                         ownAlbumsLoadMoreButton.visible = true;
-                                    }
-                                }
-                            }
-                        }
-
-                    }
-
-                    Item {
-                        id: interestingnessColumn
-                        width: viewsSlideshow.width
-                        height: viewsSlideshow.height
-
-                        property bool updateInProgress : false;
-
-                        Connections {
-                            target: interestingnessModel
-                            onInterestingnessStartUpdate: {
-                                interestingnessGridView.currentIndex = -1;
-                                interestingnessGridView.footer = interestingnessFooterComponent;
-                                interestingnessColumn.updateInProgress = true;
-                            }
-
-                            onInterestingnessUpdated: {
-                                interestingnessGridView.currentIndex = modelIndex;
-                                interestingnessColumn.updateInProgress = false;
-                            }
-                            onInterestingnessError: {
-                                interestingnessColumn.updateInProgress = false;
-                                overviewNotification.show(errorMessage);
-                            }
-                            onInterestingnessEndReached: {
-                                interestingnessGridView.footer = null;
-                                overviewNotification.show(qsTr("No more interesting photos found. Well, that's sad... :("));
-                            }
-                        }
-
-                        SilicaGridView {
-                            id: interestingnessGridView
-
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                            height: parent.height
-                            cellWidth: width / 3;
-                            cellHeight: width / 3;
-
-                            clip: true
-
-                            model: interestingnessModel
-                            delegate: PhotoThumbnail {
-                                photoData: display
-                                width: interestingnessGridView.cellWidth
-                                height: interestingnessGridView.cellHeight
-                            }
-
-                            footer: interestingnessFooterComponent
-
-                            VerticalScrollDecorator {}
-                        }
-
-                        Column {
-                            anchors {
-                                fill: parent
-                            }
-
-                            id: interestingnessUpdateInProgressColumn
-                            Behavior on opacity { NumberAnimation {} }
-                            opacity: interestingnessColumn.updateInProgress ? 1 : 0
-                            visible: interestingnessColumn.updateInProgress ? true : false
-
-                            LoadingIndicator {
-                                id: interestingnessLoadingIndicator
-                                visible: interestingnessColumn.updateInProgress
-                                Behavior on opacity { NumberAnimation {} }
-                                opacity: interestingnessColumn.updateInProgress ? 1 : 0
-                                height: parent.height
-                                width: parent.width
-                            }
-                        }
-
-                        Component {
-                            id: interestingnessFooterComponent
-                            Item {
-                                id: interestingnessLoadMoreRow
-                                width: overviewPage.width
-                                height: interestingnessLoadMoreButton.height + ( 2 * Theme.paddingLarge )
-                                Button {
-                                    id: interestingnessLoadMoreButton
-                                    Behavior on opacity { NumberAnimation {} }
-                                    text: qsTr("Load more pictures")
-                                    preferredWidth: Theme.buttonWidthLarge
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    opacity: visible ? 1 : 0
-                                    onClicked: {
-                                        console.log("Loading more interesting pictures...");
-                                        interestingnessModel.loadMore();
-                                        interestingnessLoadMoreBusyIndicator.visible = true;
-                                        interestingnessLoadMoreButton.visible = false;
-                                    }
-                                }
-                                BusyIndicator {
-                                    id: interestingnessLoadMoreBusyIndicator
-                                    Behavior on opacity { NumberAnimation {} }
-                                    anchors.horizontalCenter: parent.horizontalCenter
-                                    anchors.verticalCenter: parent.verticalCenter
-                                    visible: false
-                                    opacity: visible ? 1 : 0
-                                    running: visible
-                                    size: BusyIndicatorSize.Medium
-                                }
-                                Connections {
-                                    target: interestingnessModel
-                                    onInterestingnessAppended: {
-                                        interestingnessLoadMoreBusyIndicator.visible = false;
-                                        interestingnessLoadMoreButton.visible = true;
                                     }
                                 }
                             }
@@ -1087,6 +1091,17 @@ Page {
                         height: parent.height
                         width: parent.width
 
+
+                        Item {
+                            id: interestingnessButtonColumnLandscape
+                            height: parent.height / 5
+                            width: parent.width - Theme.paddingMedium
+                            TrendingButton {
+                                id: interestingnessButtonLandscape
+                                visible: (isActive || !navigationColumn.squeezed)
+                                anchors.verticalCenter: parent.verticalCenter
+                            }
+                        }
                         Item {
                             id: homeButtonColumnLandscape
                             height: parent.height / 5
@@ -1104,16 +1119,6 @@ Page {
                             width: parent.width - Theme.paddingMedium
                             OwnPicturesButton {
                                 id: ownAlbumsButtonLandscape
-                                visible: (isActive || !navigationColumn.squeezed)
-                                anchors.verticalCenter: parent.verticalCenter
-                            }
-                        }
-                        Item {
-                            id: interestingnessButtonColumnLandscape
-                            height: parent.height / 5
-                            width: parent.width - Theme.paddingMedium
-                            TrendingButton {
-                                id: interestingnessButtonLandscape
                                 visible: (isActive || !navigationColumn.squeezed)
                                 anchors.verticalCenter: parent.verticalCenter
                             }
@@ -1167,6 +1172,15 @@ Page {
                     y: Theme.paddingSmall
                     width: parent.width
                     Item {
+                        id: interestingnessButtonColumn
+                        width: parent.width / 5
+                        height: parent.height - navigationRowSeparator.height
+                        TrendingButton {
+                            id: interestingnessButtonPortrait
+                            anchors.top: parent.top
+                        }
+                    }
+                    Item {
                         id: homeButtonColumn
                         width: parent.width / 5
                         height: parent.height - Theme.paddingMedium
@@ -1175,22 +1189,12 @@ Page {
                             anchors.top: parent.top
                         }
                     }
-
                     Item {
                         id: ownAlbumsButtonColumn
                         width: parent.width / 5
                         height: parent.height - navigationRowSeparator.height
                         OwnAlbumsButton {
                             id: ownAlbumsButtonPortrait
-                            anchors.top: parent.top
-                        }
-                    }
-                    Item {
-                        id: interestingnessButtonColumn
-                        width: parent.width / 5
-                        height: parent.height - navigationRowSeparator.height
-                        TrendingButton {
-                            id: interestingnessButtonPortrait
                             anchors.top: parent.top
                         }
                     }
