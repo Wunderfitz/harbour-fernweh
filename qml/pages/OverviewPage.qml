@@ -350,6 +350,10 @@ Page {
                 text: qsTr("Settings")
                 onClicked: pageStack.push(Qt.resolvedUrl("../pages/SettingsPage.qml"))
             }
+            MenuItem {
+                text: qsTr("Refresh")
+                onClicked: Functions.updateFernweh()
+            }
         }
 
         Loader {
@@ -361,6 +365,10 @@ Page {
         Component {
             id: pushUpMenuComponent
             PushUpMenu {
+                MenuItem {
+                    text: qsTr("Refresh")
+                    onClicked: Functions.updateFernweh()
+                }
                 MenuItem {
                     text: qsTr("Settings")
                     onClicked: pageStack.push(Qt.resolvedUrl("../pages/SettingsPage.qml"))
