@@ -769,6 +769,11 @@ Page {
 
                         Connections {
                             target: searchPhotosModel
+                            onSearchPhotosStartUpdate: {
+                                //searchResultsGridView.footer = searchFooterComponent;
+                                searchColumn.photoSearchInProgress = true;
+                            }
+
                             onSearchPhotosUpdated: {
                                 searchColumn.photoSearchInProgress = false;
                                 searchColumn.photoSearchInTransition = false;
@@ -829,8 +834,8 @@ Page {
                             cellWidth: width / 3;
                             cellHeight: width / 3;
                             anchors.horizontalCenter: parent.horizontalCenter
-                            opacity: !searchColumn.photoSearchInProgress ? 1 : 0
-                            visible: !searchColumn.photoSearchInProgress ? true : false
+                            opacity: ( !searchColumn.photoSearchInProgress && count > 0 ) ? 1 : 0
+                            visible: ( !searchColumn.photoSearchInProgress && count > 0 ) ? true : false
                             Behavior on opacity { NumberAnimation {} }
 
                             clip: true
@@ -841,6 +846,9 @@ Page {
                                 width: searchResultsGridView.cellWidth
                                 height: searchResultsGridView.cellHeight
                             }
+
+                            footer: searchFooterComponent
+
                             VerticalScrollDecorator {}
                         }
 
@@ -899,6 +907,47 @@ Page {
                                 color: Theme.primaryColor
                                 font.pixelSize: Theme.fontSizeLarge
                                 width: parent.width - 2 * Theme.horizontalPageMargin
+                            }
+                        }
+
+                        Component {
+                            id: searchFooterComponent
+                            Item {
+                                id: searchLoadMoreRow
+                                width: overviewPage.width
+                                height: searchLoadMoreButton.height + ( 2 * Theme.paddingLarge )
+                                Button {
+                                    id: searchLoadMoreButton
+                                    Behavior on opacity { NumberAnimation {} }
+                                    text: qsTr("Load more results")
+                                    preferredWidth: Theme.buttonWidthLarge
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    opacity: visible ? 1 : 0
+                                    onClicked: {
+                                        console.log("Loading more search results...");
+                                        searchPhotosModel.loadMore();
+                                        searchLoadMoreBusyIndicator.visible = true;
+                                        searchLoadMoreButton.visible = false;
+                                    }
+                                }
+                                BusyIndicator {
+                                    id: searchLoadMoreBusyIndicator
+                                    Behavior on opacity { NumberAnimation {} }
+                                    anchors.horizontalCenter: parent.horizontalCenter
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    visible: false
+                                    opacity: visible ? 1 : 0
+                                    running: visible
+                                    size: BusyIndicatorSize.Medium
+                                }
+                                Connections {
+                                    target: searchPhotosModel
+                                    onSearchPhotosAppended: {
+                                        searchLoadMoreBusyIndicator.visible = false;
+                                        searchLoadMoreButton.visible = true;
+                                    }
+                                }
                             }
                         }
 

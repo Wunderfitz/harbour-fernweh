@@ -185,6 +185,10 @@
         <source>Load more pictures</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Load more results</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OwnAlbumsButton</name>
@@ -232,10 +236,6 @@
     </message>
     <message>
         <source>&lt;b&gt;Collection Views:&lt;/b&gt; %1</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>n/a</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

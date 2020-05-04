@@ -68,7 +68,7 @@ Item {
 
     onProfileModelChanged: {
         profileTimeline = null;
-        twitterApi.userTimeline(profileModel.screen_name);
+        //twitterApi.userTimeline(profileModel.screen_name);
     }
 
     AppNotification {
