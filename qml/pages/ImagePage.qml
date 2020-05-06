@@ -35,6 +35,7 @@ Page {
     }
 
     property variant photoData;
+    property variant photoInfo;
     property int progress: 0;
 
     property string imageUrl;
@@ -52,7 +53,8 @@ Page {
     property real oldCenterY;
 
     Component.onCompleted: {
-        flickrApi.downloadPhoto(photoData.farm, photoData.server, photoData.id, photoData.secret, "b")
+        flickrApi.downloadPhoto(photoData.farm, photoData.server, photoData.id, photoData.secret, "b");
+        flickrApi.photosGetInfo(photoData.id);
     }
 
     Connections {
@@ -83,6 +85,9 @@ Page {
                 String(downloadIds.photoSize) === "b") {
                 imagePage.progress = percentCompleted;
             }
+        }
+        onPhotosGetInfoSuccessful: {
+            imagePage.photoInfo = result;
         }
     }
 

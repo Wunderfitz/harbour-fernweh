@@ -293,6 +293,73 @@ void FlickrApi::photosSearch(const QString &searchString, const int &page)
     connect(reply, SIGNAL(finished()), this, SLOT(handlePhotosSearchSuccessful()));
 }
 
+void FlickrApi::photosGetInfo(const QString &photoId)
+{
+    qDebug() << "FlickrApi::photosGetInfo" << photoId;
+    QUrl url = QUrl(API_BASE_URL);
+    QUrlQuery urlQuery = QUrlQuery();
+    urlQuery.addQueryItem("method", "flickr.photos.getInfo");
+    urlQuery.addQueryItem("photo_id", photoId);
+    urlQuery.addQueryItem("format", "json");
+    urlQuery.addQueryItem("nojsoncallback", "1");
+    url.setQuery(urlQuery);
+    QNetworkRequest request(url);
+
+    QList<O0RequestParameter> requestParameters = QList<O0RequestParameter>();
+    requestParameters.append(O0RequestParameter(QByteArray("method"), QByteArray("flickr.photos.getInfo")));
+    requestParameters.append(O0RequestParameter(QByteArray("photo_id"), photoId.toUtf8()));
+    requestParameters.append(O0RequestParameter(QByteArray("format"), QByteArray("json")));
+    requestParameters.append(O0RequestParameter(QByteArray("nojsoncallback"), QByteArray("1")));
+    QNetworkReply *reply = requestor->get(request, requestParameters);
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handlePhotosGetInfoError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(finished()), this, SLOT(handlePhotosGetInfoSuccessful()));
+}
+
+void FlickrApi::photosGetExif(const QString &photoId)
+{
+    qDebug() << "FlickrApi::photosGetExif" << photoId;
+    QUrl url = QUrl(API_BASE_URL);
+    QUrlQuery urlQuery = QUrlQuery();
+    urlQuery.addQueryItem("method", "flickr.photos.getExif");
+    urlQuery.addQueryItem("photo_id", photoId);
+    urlQuery.addQueryItem("format", "json");
+    urlQuery.addQueryItem("nojsoncallback", "1");
+    url.setQuery(urlQuery);
+    QNetworkRequest request(url);
+
+    QList<O0RequestParameter> requestParameters = QList<O0RequestParameter>();
+    requestParameters.append(O0RequestParameter(QByteArray("method"), QByteArray("flickr.photos.getExif")));
+    requestParameters.append(O0RequestParameter(QByteArray("photo_id"), photoId.toUtf8()));
+    requestParameters.append(O0RequestParameter(QByteArray("format"), QByteArray("json")));
+    requestParameters.append(O0RequestParameter(QByteArray("nojsoncallback"), QByteArray("1")));
+    QNetworkReply *reply = requestor->get(request, requestParameters);
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handlePhotosGetExifError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(finished()), this, SLOT(handlePhotosGetExifSuccessful()));
+}
+
+void FlickrApi::photosLicensesGetInfo()
+{
+    qDebug() << "FlickrApi::photosLicensesGetInfo";
+    QUrl url = QUrl(API_BASE_URL);
+    QUrlQuery urlQuery = QUrlQuery();
+    urlQuery.addQueryItem("method", "flickr.photos.licenses.getInfo");
+    urlQuery.addQueryItem("format", "json");
+    urlQuery.addQueryItem("nojsoncallback", "1");
+    url.setQuery(urlQuery);
+    QNetworkRequest request(url);
+
+    QList<O0RequestParameter> requestParameters = QList<O0RequestParameter>();
+    requestParameters.append(O0RequestParameter(QByteArray("method"), QByteArray("flickr.photos.licenses.getInfo")));
+    requestParameters.append(O0RequestParameter(QByteArray("format"), QByteArray("json")));
+    requestParameters.append(O0RequestParameter(QByteArray("nojsoncallback"), QByteArray("1")));
+    QNetworkReply *reply = requestor->get(request, requestParameters);
+
+    connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handlePhotosLicensesGetInfoError(QNetworkReply::NetworkError)));
+    connect(reply, SIGNAL(finished()), this, SLOT(handlePhotosLicensesGetInfoSuccessful()));
+}
+
 void FlickrApi::handleTestLoginSuccessful()
 {
     qDebug() << "FlickrApi::handleTestLoginSuccessful";
@@ -610,6 +677,97 @@ void FlickrApi::handlePhotosSearchError(QNetworkReply::NetworkError error)
     QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
     qWarning() << "FlickrApi::handlePhotosSearchError:" << (int)error << reply->errorString();
     emit photosSearchError(reply->errorString());
+}
+
+void FlickrApi::handlePhotosGetInfoSuccessful()
+{
+    qDebug() << "FlickrApi::handlePhotosGetInfoSuccessful";
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
+    if (reply->error() != QNetworkReply::NoError) {
+        return;
+    }
+
+    QString urlQueryRaw = reply->request().url().query();
+    QUrlQuery urlQuery(urlQueryRaw);
+
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+
+    // qDebug().noquote() << jsonDocument.toJson();
+
+    if (jsonDocument.isObject()) {
+        emit photosGetInfoSuccessful(urlQuery.queryItemValue("photo_id"), jsonDocument.object().toVariantMap());
+    } else {
+        emit photosGetInfoError(urlQuery.queryItemValue("photo_id"), "Fernweh couldn't understand Flickr's response!");
+    }
+}
+
+void FlickrApi::handlePhotosGetInfoError(QNetworkReply::NetworkError error)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    qWarning() << "FlickrApi::handlePhotosGetInfoError:" << (int)error << reply->errorString();
+    QString urlQueryRaw = reply->request().url().query();
+    QUrlQuery urlQuery(urlQueryRaw);
+    emit photosGetInfoError(urlQuery.queryItemValue("photo_id"), reply->errorString());
+}
+
+void FlickrApi::handlePhotosGetExifSuccessful()
+{
+    qDebug() << "FlickrApi::handlePhotosGetExifSuccessful";
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
+    if (reply->error() != QNetworkReply::NoError) {
+        return;
+    }
+
+    QString urlQueryRaw = reply->request().url().query();
+    QUrlQuery urlQuery(urlQueryRaw);
+
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+
+    // qDebug().noquote() << jsonDocument.toJson();
+
+    if (jsonDocument.isObject()) {
+        emit photosGetExifSuccessful(urlQuery.queryItemValue("photo_id"), jsonDocument.object().toVariantMap());
+    } else {
+        emit photosGetExifError(urlQuery.queryItemValue("photo_id"), "Fernweh couldn't understand Flickr's response!");
+    }
+}
+
+void FlickrApi::handlePhotosGetExifError(QNetworkReply::NetworkError error)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    qWarning() << "FlickrApi::handlePhotosGetExifError:" << (int)error << reply->errorString();
+    QString urlQueryRaw = reply->request().url().query();
+    QUrlQuery urlQuery(urlQueryRaw);
+    emit photosGetExifError(urlQuery.queryItemValue("photo_id"), reply->errorString());
+}
+
+void FlickrApi::handlePhotosLicensesGetInfoSuccessful()
+{
+    qDebug() << "FlickrApi::handlePhotosLicensesGetInfoSuccessful";
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
+    if (reply->error() != QNetworkReply::NoError) {
+        return;
+    }
+
+    QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+
+    //qDebug().noquote() << jsonDocument.toJson();
+
+    if (jsonDocument.isObject()) {
+        emit photosLicensesGetInfoSuccessful(jsonDocument.object().toVariantMap());
+    } else {
+        emit photosLicensesGetInfoError("Fernweh couldn't understand Flickr's response!");
+    }
+}
+
+void FlickrApi::handlePhotosLicensesGetInfoError(QNetworkReply::NetworkError error)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    qWarning() << "FlickrApi::handlePhotosLicensesGetInfoError:" << (int)error << reply->errorString();
+    emit photosLicensesGetInfoError(reply->errorString());
 }
 
 QVariantMap FlickrApi::getDownloadIds(const QNetworkRequest &request)

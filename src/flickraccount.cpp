@@ -20,7 +20,12 @@
 
 #include <QDebug>
 #include <QFile>
+#include <QDir>
+#include <QDirIterator>
 #include <QUuid>
+#include <QStandardPaths>
+#include <QDateTime>
+#include <QDateTime>
 
 #include "o0settingsstore.h"
 #include "o1flickrglobals.h"
@@ -151,6 +156,31 @@ void FlickrAccount::setFontSize(const QString &fontSize)
 {
     settings.setValue(SETTINGS_FONT_SIZE, fontSize);
     emit fontSizeChanged(fontSize);
+}
+
+void FlickrAccount::removeOldCacheFiles()
+{
+    qDebug() << "[FlickrAccount] Removing old cache files...";
+    // Flickr API terms and conditions require deletion of files older than 24 hours
+    QDateTime yesterday = QDateTime::currentDateTime().addDays(-1);
+    QDirIterator cacheDirectoryIterator(QStandardPaths::writableLocation(QStandardPaths::CacheLocation), QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks, QDirIterator::Subdirectories);
+    qint64 cacheSizeBefore = 0;
+    qint64 cacheSizeRemoved = 0;
+    while (cacheDirectoryIterator.hasNext()) {
+        QFileInfo fileInformation(cacheDirectoryIterator.next());
+        cacheSizeBefore += fileInformation.size();
+        if (fileInformation.created() < yesterday) {
+            if (QFile::remove(fileInformation.filePath())) {
+                cacheSizeRemoved += fileInformation.size();
+                qDebug() << "Cache file removed " << fileInformation.filePath();
+            } else {
+                qDebug() << "Error removing cache file " << fileInformation.filePath();
+            }
+        }
+    }
+    qDebug() << "Previous cache size: " << qRound64(qreal(cacheSizeBefore / 1024)) << " KB";
+    qDebug() << "Removed cache size: " << qRound64(qreal(cacheSizeRemoved / 1024)) << " KB";
+    qDebug() << "Remaining cache size: " << qRound64(qreal((cacheSizeBefore - cacheSizeRemoved) / 1024)) << " KB";
 }
 
 FlickrApi *FlickrAccount::getFlickrApi()

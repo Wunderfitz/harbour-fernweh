@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 
     FlickrAccount flickrAccount;
     context->setContextProperty("flickrAccount", &flickrAccount);
+    flickrAccount.removeOldCacheFiles();
 
     FlickrApi *flickrApi = flickrAccount.getFlickrApi();
     context->setContextProperty("flickrApi", flickrApi);

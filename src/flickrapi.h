@@ -54,6 +54,9 @@ public:
     Q_INVOKABLE void photosetsGetPhotos(const QString &photosetId, const int &page = 1);
     Q_INVOKABLE void interestingnessGetList(const int &page = 1);
     Q_INVOKABLE void photosSearch(const QString &searchString, const int &page = 1);
+    Q_INVOKABLE void photosGetInfo(const QString &photoId);
+    Q_INVOKABLE void photosGetExif(const QString &photoId);
+    Q_INVOKABLE void photosLicensesGetInfo();
 
 signals:
     void testLoginSuccessful(const QVariantMap &result);
@@ -81,6 +84,12 @@ signals:
     void interestingnessGetListError(const QString &errorMessage);
     void photosSearchSuccessful(const QVariantMap &result, const bool incrementalUpdate);
     void photosSearchError(const QString &errorMessage);
+    void photosGetInfoSuccessful(const QString photoId, const QVariantMap &result);
+    void photosGetInfoError(const QString photoId, const QString &errorMessage);
+    void photosGetExifSuccessful(const QString photoId, const QVariantMap &result);
+    void photosGetExifError(const QString photoId, const QString &errorMessage);
+    void photosLicensesGetInfoSuccessful(const QVariantMap &result);
+    void photosLicensesGetInfoError(const QString &errorMessage);
 
 public slots:
     void handleTestLoginSuccessful();
@@ -102,6 +111,12 @@ public slots:
     void handleInterestingnessGetListError(QNetworkReply::NetworkError error);
     void handlePhotosSearchSuccessful();
     void handlePhotosSearchError(QNetworkReply::NetworkError error);
+    void handlePhotosGetInfoSuccessful();
+    void handlePhotosGetInfoError(QNetworkReply::NetworkError error);
+    void handlePhotosGetExifSuccessful();
+    void handlePhotosGetExifError(QNetworkReply::NetworkError error);
+    void handlePhotosLicensesGetInfoSuccessful();
+    void handlePhotosLicensesGetInfoError(QNetworkReply::NetworkError error);
 
 private:
     QVariantMap getDownloadIds(const QNetworkRequest &request);

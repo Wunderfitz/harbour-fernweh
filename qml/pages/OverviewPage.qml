@@ -36,6 +36,7 @@ Page {
     property variant myUser;
     property variant myStats;
     property variant profileEntity;
+    property variant licenses;
 
     Component.onCompleted: {
         flickrApi.testLogin();
@@ -187,6 +188,7 @@ Page {
         target: flickrApi
         onTestLoginSuccessful: {
             if (!overviewPage.initializationCompleted) {
+                flickrApi.photosLicensesGetInfo();
                 overviewPage.myLoginData = result;
                 hideAccountVerificationColumn();
                 overviewPage.initializationCompleted = true;
@@ -224,6 +226,9 @@ Page {
         }
         onStatsGetTotalViewsSuccessful:{
             overviewPage.myStats = result;
+        }
+        onPhotosLicensesGetInfoSuccessful: {
+            overviewPage.licenses = result;
         }
 
     }

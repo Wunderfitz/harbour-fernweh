@@ -42,6 +42,7 @@ public:
     Q_INVOKABLE void setUseSwipeNavigation(const bool &useSwipeNavigation);
     Q_INVOKABLE QString getFontSize();
     Q_INVOKABLE void setFontSize(const QString &fontSize);
+    Q_INVOKABLE void removeOldCacheFiles();
 
     FlickrApi *getFlickrApi();
 
