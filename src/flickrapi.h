@@ -57,7 +57,8 @@ public:
     Q_INVOKABLE void interestingnessGetList(const int &page = 1);
     Q_INVOKABLE void photosSearch(const QString &searchString, const int &page = 1);
     Q_INVOKABLE void photosGetInfo(const QString &photoId);
-    Q_INVOKABLE void photosGetExif(const QString &photoId);
+    Q_INVOKABLE void photosGetExif(const QString &photoId, const QString &secret);
+    Q_INVOKABLE void photosGetFavorites(const QString &photoId);
     Q_INVOKABLE void photosLicensesGetInfo();
 
 signals:
@@ -92,6 +93,8 @@ signals:
     void photosGetInfoError(const QString photoId, const QString &errorMessage);
     void photosGetExifSuccessful(const QString photoId, const QVariantMap &result);
     void photosGetExifError(const QString photoId, const QString &errorMessage);
+    void photosGetFavoritesSuccessful(const QString photoId, const QVariantMap &result);
+    void photosGetFavoritesError(const QString photoId, const QString &errorMessage);
     void photosLicensesGetInfoSuccessful(const QVariantMap &result);
     void photosLicensesGetInfoError(const QString &errorMessage);
 
@@ -121,6 +124,8 @@ public slots:
     void handlePhotosGetInfoError(QNetworkReply::NetworkError error);
     void handlePhotosGetExifSuccessful();
     void handlePhotosGetExifError(QNetworkReply::NetworkError error);
+    void handlePhotosGetFavoritesSuccessful();
+    void handlePhotosGetFavoritesError(QNetworkReply::NetworkError error);
     void handlePhotosLicensesGetInfoSuccessful();
     void handlePhotosLicensesGetInfoError(QNetworkReply::NetworkError error);
 

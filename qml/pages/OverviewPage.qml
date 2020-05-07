@@ -916,6 +916,7 @@ Page {
 
                                 fillMode: Image.PreserveAspectFit
                                 width: 1/3 * parent.width
+                                visible: overviewPage.isPortrait || ( overviewPage.isLandscape && searchField.focus === false )
                             }
 
                             InfoLabel {

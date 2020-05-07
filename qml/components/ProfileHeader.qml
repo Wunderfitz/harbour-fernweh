@@ -51,6 +51,9 @@ Item {
     Connections {
         target: flickrApi
         onDownloadIconSuccessful : {
+            if (profileModel.person.nsid !== downloadIds.id) {
+                return;
+            }
             if (downloadIds.iconKind === "buddy") {
                 profilePicture.source = filePath;
             } else {
@@ -145,7 +148,7 @@ Item {
         }
         Text {
             id: profileNameText
-            text: profileModel.person.realname._content
+            text: profileModel.person.realname ? profileModel.person.realname._content : profileModel.person.username._content
             font {
                 pixelSize: flickrAccount.getFontSize() === "fernweh" ? Theme.fontSizeMedium : Theme.fontSizeLarge
                 bold: true

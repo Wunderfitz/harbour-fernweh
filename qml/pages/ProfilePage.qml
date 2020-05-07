@@ -126,13 +126,13 @@ Page {
                 PullDownMenu {
                     MenuItem {
                         onClicked: {
-                            Qt.openUrlExternally(profilePage.profileModel.person.profileurl);
+                            Qt.openUrlExternally(profilePage.profileModel.person.profileurl._content);
                         }
                         text: qsTr("Open in Browser")
                     }
                     MenuItem {
                         onClicked: {
-                            Clipboard.text = profilePage.profileModel.person.profileurl;
+                            Clipboard.text = profilePage.profileModel.person.profileurl._content;
                         }
                         text: qsTr("Copy URL to Clipboard")
                     }

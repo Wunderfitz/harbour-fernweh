@@ -136,6 +136,18 @@
         <source>Go to Author&apos;s Profile</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Favorited</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ImageProgressIndicator</name>

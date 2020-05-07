@@ -66,7 +66,9 @@ Item {
 
     onProfileModelChanged: {
         profileTimeline = null;
-        flickrApi.peopleGetPhotos(profileModel.person.id);
+        if (!ownProfile) {
+            flickrApi.peopleGetPhotos(profileModel.person.id);
+        }
     }
 
     AppNotification {
@@ -355,11 +357,6 @@ Item {
         id: albumPhotosGridView
 
         header: profileListHeaderComponent
-
-        onModelChanged: {
-            console.log("WAAAAH " + count);
-            console.log(width + "x" + height);
-        }
 
         anchors {
             top: parent.top

@@ -37,6 +37,8 @@ Page {
     property variant photoData;
     property variant photoInfo;
     property string photoPageUrl;
+    property string photoFavorites;
+    property variant photoExif;
     property string locationString;
     property int progress: 0;
 
@@ -57,6 +59,7 @@ Page {
     Component.onCompleted: {
         flickrApi.downloadPhoto(photoData.farm, photoData.server, photoData.id, photoData.secret, "b");
         flickrApi.photosGetInfo(photoData.id);
+        flickrApi.photosGetFavorites(photoData.id);
     }
 
     Connections {
@@ -94,6 +97,18 @@ Page {
                 imagePage.photoPageUrl = imagePage.photoInfo.photo.urls.url[0]._content;
             }
             imagePage.locationString = Functions.getLocationString(imagePage.photoInfo);
+            flickrApi.photosGetExif(photoData.id, result.photo.secret);
+        }
+        onPhotosGetFavoritesSuccessful: {
+            if (photoId === photoData.id) {
+                imagePage.photoFavorites = result.photo.total;
+            }
+        }
+        onPhotosGetExifSuccessful: {
+            if (photoId === photoData.id) {
+                imagePage.photoExif = result;
+                exifRepeater.model = result.photo.exif;
+            }
         }
     }
 
@@ -260,6 +275,10 @@ Page {
                 value: photoInfo && photoInfo.photo.title._content ? photoInfo.photo.title._content : qsTr("n/a")
             }
             DetailItem {
+                label: qsTr("Description")
+                value: photoInfo && photoInfo.photo.description._content ? photoInfo.photo.description._content : qsTr("n/a")
+            }
+            DetailItem {
                 label: qsTr("Date Taken")
                 value: photoInfo && photoInfo.photo.dates.taken ? (new Date(photoInfo.photo.dates.taken)).toLocaleString(Qt.locale(), Locale.ShortFormat) : qsTr("n/a")
             }
@@ -268,8 +287,12 @@ Page {
                 value: photoInfo && photoInfo.photo.views ? (Number(photoInfo.photo.views).toLocaleString(Qt.locale(), "f", 0)) : qsTr("n/a")
             }
             DetailItem {
+                label: qsTr("Favorited")
+                value: photoFavorites ? (Number(photoFavorites).toLocaleString(Qt.locale(), "f", 0)) : qsTr("n/a")
+            }
+            DetailItem {
                 label: qsTr("Author")
-                value: photoInfo && photoInfo.photo.owner.realname ? (photoInfo.photo.owner.realname) : qsTr("n/a")
+                value: photoInfo && photoInfo.photo.owner.username ? (photoInfo.photo.owner.username) : qsTr("n/a")
             }
             DetailItem {
                 label: qsTr("License")
@@ -279,8 +302,20 @@ Page {
                 label: qsTr("Location")
                 value: imagePage.locationString ? imagePage.locationString : qsTr("n/a")
             }
+            DetailItem {
+                label: qsTr("Camera")
+                value: photoExif && photoExif.photo.camera ? photoExif.photo.camera : qsTr("n/a")
+            }
+            Repeater {
+                id: exifRepeater
+                DetailItem {
+                    label: modelData.label
+                    value: modelData.clean ? modelData.clean._content : modelData.raw._content
+                }
+            }
         }
 
+        VerticalScrollDecorator {}
     }
 
     BackgroundProgressIndicator {
