@@ -140,6 +140,38 @@ void FlickrApi::downloadPhoto(const QString &farm, const QString &server, const 
     }
 }
 
+void FlickrApi::downloadIcon(const QString &farm, const QString &server, const QString &id, const QString &iconKind)
+{
+    qDebug() << "FlickrApi::downloadIcon" << farm << server << id << iconKind;
+    QString urlString = "https://farm" + farm + ".staticflickr.com/" + server + (iconKind == "buddy" ? "/buddyicons/" : "/coverphoto/" ) + id + (iconKind == "buddy" ? "_r" : "") + ".jpg";
+    QUrl url = QUrl(urlString);
+    QNetworkRequest request(url);
+    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Wayland; SailfishOS) Piepmatz (Not Firefox/42.0)");
+    request.setRawHeader(QByteArray("Accept"), QByteArray("image/jpg,image/jpeg"));
+    request.setRawHeader(QByteArray("Accept-Charset"), QByteArray("utf-8"));
+    request.setRawHeader(QByteArray("Connection"), QByteArray("close"));
+    request.setRawHeader(QByteArray("Cache-Control"), QByteArray("max-age=0"));
+    request.setRawHeader(QByteArray(CUSTOM_HEADER_FARM), farm.toUtf8());
+    request.setRawHeader(QByteArray(CUSTOM_HEADER_SERVER), server.toUtf8());
+    request.setRawHeader(QByteArray(CUSTOM_HEADER_ID), id.toUtf8());
+    request.setRawHeader(QByteArray(CUSTOM_HEADER_ICONKIND), iconKind.toUtf8());
+
+    QString filePath = this->getCacheIconPath(farm, server, id, iconKind);
+
+    if (QFile::exists(filePath)) {
+        QVariantMap downloadIds = this->getDownloadIds(request);
+        QImage downloadedImage(filePath);
+        downloadIds.insert("width", downloadedImage.width());
+        downloadIds.insert("height", downloadedImage.height());
+        emit downloadIconSuccessful(downloadIds, filePath);
+    } else {
+        QNetworkReply *reply = manager->get(request);
+        connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handleDownloadIconError(QNetworkReply::NetworkError)));
+        connect(reply, SIGNAL(finished()), this, SLOT(handleDownloadIconFinished()));
+    }
+}
+
 void FlickrApi::copyPhotoToDownloads(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size)
 {
     QString downloadFilePath = this->getDownloadFilePath(id);
@@ -397,6 +429,7 @@ void FlickrApi::handlePeopleGetInfoSuccessful()
     QUrlQuery urlQuery(urlQueryRaw);
 
     QJsonDocument jsonDocument = QJsonDocument::fromJson(reply->readAll());
+    //qDebug().noquote() << jsonDocument.toJson();
     if (jsonDocument.isObject()) {
         emit peopleGetInfoSuccessful(urlQuery.queryItemValue("user_id"), jsonDocument.object().toVariantMap());
     } else {
@@ -513,6 +546,48 @@ void FlickrApi::handleDownloadProgress(qint64 bytesSent, qint64 bytesTotal)
 
     int percentCompleted = 100 * bytesSent / bytesTotal;
     emit downloadStatus(downloadIds, percentCompleted);
+}
+
+void FlickrApi::handleDownloadIconError(QNetworkReply::NetworkError error)
+{
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    qWarning() << "FlickrApi::handleDownloadIconError:" << (int)error << reply->errorString();
+    emit downloadIconError(this->getDownloadIds(reply->request()), reply->errorString());
+}
+
+void FlickrApi::handleDownloadIconFinished()
+{
+    qDebug() << "FlickrApi::handleDownloadIconFinished";
+    QNetworkReply *reply = qobject_cast<QNetworkReply *>(sender());
+    reply->deleteLater();
+    if (reply->error() != QNetworkReply::NoError) {
+        return;
+    }
+
+    QVariantMap downloadIds = this->getDownloadIds(reply->request());
+
+    QDir cachePath(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+    if (!cachePath.exists()) {
+        cachePath.mkpath(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
+    }
+
+    QString filePath = this->getCacheIconPath(downloadIds.value("farm").toString(),
+                                              downloadIds.value("server").toString(),
+                                              downloadIds.value("id").toString(),
+                                              downloadIds.value("iconKind").toString());
+
+    QFile downloadedFile(filePath);
+    if (downloadedFile.open(QIODevice::WriteOnly)) {
+        qDebug() << "Writing downloaded icon to " + downloadedFile.fileName();
+        downloadedFile.write(reply->readAll());
+        QImage downloadedImage(filePath);
+        downloadIds.insert("width", downloadedImage.width());
+        downloadIds.insert("height", downloadedImage.height());
+        downloadedFile.close();
+        emit downloadIconSuccessful(downloadIds, filePath);
+    } else {
+        emit downloadIconError(downloadIds, "Error storing icon at " + filePath + ", error was: " + downloadedFile.errorString());
+    }
 }
 
 void FlickrApi::handleStatsGetTotalViewsSuccessful()
@@ -776,8 +851,15 @@ QVariantMap FlickrApi::getDownloadIds(const QNetworkRequest &request)
     downloadIds.insert("farm", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_FARM)));
     downloadIds.insert("server", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_SERVER)));
     downloadIds.insert("id", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_ID)));
-    downloadIds.insert("secret", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_SECRET)));
-    downloadIds.insert("photoSize", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_SIZE)));
+    if (request.hasRawHeader(CUSTOM_HEADER_SECRET)) {
+        downloadIds.insert("secret", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_SECRET)));
+    }
+    if (request.hasRawHeader(CUSTOM_HEADER_SIZE)) {
+        downloadIds.insert("photoSize", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_SIZE)));
+    }
+    if (request.hasRawHeader(CUSTOM_HEADER_ICONKIND)) {
+        downloadIds.insert("iconKind", QString::fromUtf8(request.rawHeader(CUSTOM_HEADER_ICONKIND)));
+    }
     return downloadIds;
 }
 
@@ -788,6 +870,15 @@ QString FlickrApi::getCacheFilePath(const QString &farm, const QString &server, 
                                                                                                           + id + "_"
                                                                                                           + secret + "_"
                                                                                                           + size + ".jpg";
+    return filePath;
+}
+
+QString FlickrApi::getCacheIconPath(const QString &farm, const QString &server, const QString &id, const QString &iconKind)
+{
+    QString filePath = QStandardPaths::writableLocation(QStandardPaths::CacheLocation) + QLatin1Char('/') + farm + "_"
+                                                                                                          + server + "_"
+                                                                                                          + id + "_"
+                                                                                                          + iconKind + ".jpg";
     return filePath;
 }
 

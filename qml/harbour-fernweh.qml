@@ -24,6 +24,16 @@ ApplicationWindow
 {
     id: appWindow
 
+    property variant licenses
+
+    Connections {
+        target: flickrApi
+
+        onPhotosLicensesGetInfoSuccessful: {
+            appWindow.licenses = result.licenses;
+        }
+    }
+
     Component {
         id: welcomePage
         WelcomePage {}

@@ -26,6 +26,7 @@ Item {
     id: profileHeader
 
     property variant profileModel;
+    property string backgroundPhotoUrl;
     width: parent.width
     height: ((profilePictureColumn.y + profilePictureColumn.height) > (profileOverviewColumn.y + profileOverviewColumn.height) ? (profilePictureColumn.y + profilePictureColumn.height) : (profileOverviewColumn.y + profileOverviewColumn.height)) + Theme.paddingSmall
 
@@ -42,6 +43,22 @@ Item {
         }
     }
 
+    Component.onCompleted: {
+        flickrApi.downloadIcon(profileModel.person.iconfarm, profileModel.person.iconserver, profileModel.person.nsid, "buddy");
+        flickrApi.downloadIcon(profileModel.person.iconfarm, profileModel.person.iconserver, profileModel.person.nsid, "cover");
+    }
+
+    Connections {
+        target: flickrApi
+        onDownloadIconSuccessful : {
+            if (downloadIds.iconKind === "buddy") {
+                profilePicture.source = filePath;
+            } else {
+                profileHeader.backgroundPhotoUrl = filePath;
+            }
+        }
+    }
+
     Item {
         id: profileBackgroundItem
         width: parent.width
@@ -50,7 +67,8 @@ Item {
             id: profileBannerComponent
             Image {
                 id: profileBackgroundImage
-                source: Functions.getProfileBackgroundUrl(profileModel.person)
+                //source: Functions.getProfileBackgroundUrl(profileModel.person)
+                source: profileHeader.backgroundPhotoUrl
                 fillMode: Image.PreserveAspectCrop
             }
         }
@@ -78,7 +96,7 @@ Item {
 
             Image {
                 id: profilePicture
-                source: Functions.getProfileImageUrl(profileModel.person)
+                //source: Functions.getProfileImageUrl(profileModel.person)
                 width: parent.width
                 height: parent.height
                 fillMode: Image.PreserveAspectCrop
@@ -104,12 +122,6 @@ Item {
                 visible: profilePicture.status === Image.Ready ? true : false
                 opacity: profilePicture.status === Image.Ready ? 1 : 0
                 Behavior on opacity { NumberAnimation {} }
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-//                        pageStack.push( singleImageComponent );
-                    }
-                }
             }
 
             ImageProgressIndicator {

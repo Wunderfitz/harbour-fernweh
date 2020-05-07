@@ -36,6 +36,8 @@ Page {
 
     property variant photoData;
     property variant photoInfo;
+    property string photoPageUrl;
+    property string locationString;
     property int progress: 0;
 
     property string imageUrl;
@@ -88,6 +90,10 @@ Page {
         }
         onPhotosGetInfoSuccessful: {
             imagePage.photoInfo = result;
+            if (imagePage.photoInfo.photo.urls.url) {
+                imagePage.photoPageUrl = imagePage.photoInfo.photo.urls.url[0]._content;
+            }
+            imagePage.locationString = Functions.getLocationString(imagePage.photoInfo);
         }
     }
 
@@ -101,7 +107,27 @@ Page {
         PullDownMenu {
             visible: photoData ? true : false
             MenuItem {
-                text: qsTr("Download")
+                text: qsTr("Copy URL to Clipboard")
+                onClicked: {
+                    Clipboard.text = imagePage.photoPageUrl;
+                }
+                visible: imagePage.photoPageUrl
+            }
+            MenuItem {
+                text: qsTr("Open in Browser")
+                onClicked: {
+                    Qt.openUrlExternally(imagePage.photoPageUrl);
+                }
+                visible: imagePage.photoPageUrl
+            }
+            MenuItem {
+                text: qsTr("Go to Author's Profile")
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("../pages/ProfilePage.qml"), {"userId": photoData.owner});
+                }
+            }
+            MenuItem {
+                text: qsTr("Download Photo")
                 onClicked: {
                     flickrApi.copyPhotoToDownloads(photoData.farm, photoData.server, photoData.id, photoData.secret, "b");
                 }
@@ -183,8 +209,79 @@ Page {
             }
         }
 
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                imageInformationFlickable.visible = true;
+            }
+        }
+
     }
 
+    Flickable {
+        id: imageInformationFlickable
+        anchors.fill: imagePage
+        visible: false
+        boundsBehavior: Flickable.StopAtBounds
+        contentHeight: imageInformationColumn.height
+
+        Rectangle {
+            id: imageInformationBackground
+            color: "black"
+            width: parent.width
+            height: imageInformationColumn.height >= imagePage.height ? imageInformationColumn.height : imagePage.height
+            opacity: visible ? 0.7 : 0
+            Behavior on opacity { NumberAnimation {} }
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    imageInformationFlickable.visible = false;
+                }
+            }
+        }
+
+        Column {
+            id: imageInformationColumn
+            spacing: Theme.paddingSmall
+            width: parent.width
+            opacity: imageInformationFlickable.visible ? 1 : 0
+            Behavior on opacity { NumberAnimation {} }
+
+            Label {
+                id: separatorLabel
+                width: parent.width
+                font.pixelSize: Theme.fontSizeExtraSmall
+            }
+            InfoLabel {
+                text: qsTr("Photo Details")
+            }
+            DetailItem {
+                label: qsTr("Title")
+                value: photoInfo && photoInfo.photo.title._content ? photoInfo.photo.title._content : qsTr("n/a")
+            }
+            DetailItem {
+                label: qsTr("Date Taken")
+                value: photoInfo && photoInfo.photo.dates.taken ? (new Date(photoInfo.photo.dates.taken)).toLocaleString(Qt.locale(), Locale.ShortFormat) : qsTr("n/a")
+            }
+            DetailItem {
+                label: qsTr("Views")
+                value: photoInfo && photoInfo.photo.views ? (Number(photoInfo.photo.views).toLocaleString(Qt.locale(), "f", 0)) : qsTr("n/a")
+            }
+            DetailItem {
+                label: qsTr("Author")
+                value: photoInfo && photoInfo.photo.owner.realname ? (photoInfo.photo.owner.realname) : qsTr("n/a")
+            }
+            DetailItem {
+                label: qsTr("License")
+                value: photoInfo && photoInfo.photo.license ? Functions.getLicenseInfoById(appWindow.licenses, photoInfo.photo.license).name : qsTr("n/a")
+            }
+            DetailItem {
+                label: qsTr("Location")
+                value: imagePage.locationString ? imagePage.locationString : qsTr("n/a")
+            }
+        }
+
+    }
 
     BackgroundProgressIndicator {
         progress: imagePage.progress

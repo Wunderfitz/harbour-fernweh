@@ -36,7 +36,6 @@ Page {
     property variant myUser;
     property variant myStats;
     property variant profileEntity;
-    property variant licenses;
 
     Component.onCompleted: {
         flickrApi.testLogin();
@@ -226,9 +225,6 @@ Page {
         }
         onStatsGetTotalViewsSuccessful:{
             overviewPage.myStats = result;
-        }
-        onPhotosLicensesGetInfoSuccessful: {
-            overviewPage.licenses = result;
         }
 
     }
@@ -439,6 +435,8 @@ Page {
                             height: parent.height
                             cellWidth: width / 3;
                             cellHeight: width / 3;
+
+                            visible: count > 0
 
                             clip: true
 
@@ -702,6 +700,8 @@ Page {
                             id: ownAlbumsListView
 
                             clip: true
+
+                            visible: count > 0
 
                             model: ownAlbumsModel
                             delegate: Album {

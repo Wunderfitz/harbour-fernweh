@@ -32,22 +32,22 @@ Item {
     Behavior on opacity { NumberAnimation {} }
 
     function scrollDown() {
-        profileTimelineListView.flick(0, - parent.height);
+        profileTimelineGridView.flick(0, - parent.height);
     }
     function scrollUp() {
-        profileTimelineListView.flick(0, parent.height);
+        profileTimelineGridView.flick(0, parent.height);
     }
     function pageDown() {
-        profileTimelineListView.flick(0, - parent.height * 2);
+        profileTimelineGridView.flick(0, - parent.height * 2);
     }
     function pageUp() {
-        profileTimelineListView.flick(0, parent.height * 2);
+        profileTimelineGridView.flick(0, parent.height * 2);
     }
     function scrollToTop() {
-        profileTimelineListView.scrollToTop();
+        profileTimelineGridView.scrollToTop();
     }
     function scrollToBottom() {
-        profileTimelineListView.scrollToBottom();
+        profileTimelineGridView.scrollToBottom();
     }
 
     property variant profileModel;
@@ -61,14 +61,12 @@ Item {
         console.log("Profile component initialized for " + profileModel.person.id + ": " + profileModel.person.realname._content);
         if (overviewPage.myLoginData.user.id && profileItem.ownProfile) {
             profileTimelineLoadingIndicator.visible = false;
-        } else {
-            //twitterApi.userTimeline(profileModel.screen_name);
         }
     }
 
     onProfileModelChanged: {
         profileTimeline = null;
-        //twitterApi.userTimeline(profileModel.screen_name);
+        flickrApi.peopleGetPhotos(profileModel.person.id);
     }
 
     AppNotification {
@@ -88,21 +86,22 @@ Item {
         }
     }
 
-//    Connections {
-//        target: twitterApi
-//        onUserTimelineSuccessful: {
-//            if (!profileTimeline) {
-//                console.log("Timeline updated for user " + profileModel.screen_name)
-//                profileTimeline = result;
-//            }
-//        }
-//        onUserTimelineError: {
-//            if (!profileTimeline) {
-//                loadingError = true;
-//                notification.show(errorMessage);
-//            }
-//        }
-//    }
+    Connections {
+        target: flickrApi
+        onPeopleGetPhotosSuccessful: {
+            if (profileModel.person.id === userId) {
+                console.log("Timeline photos updated for user " + userId)
+                profileTimeline = result.photos.photo;
+                //albumPhotosGridView.model = profileTimeline;
+            }
+        }
+        onPeopleGetPhotosError: {
+            if (profileModel.person.id === userId) {
+                loadingError = true;
+                notification.show(errorMessage);
+            }
+        }
+    }
 
     Component {
         id: profileListHeaderComponent
@@ -136,16 +135,25 @@ Item {
                     Text {
                         id: profileDescriptionText
                         text: profileModel.person.description._content
-                        //horizontalAlignment: Text.AlignHCenter
                         font {
                             pixelSize: componentFontSize
-                            italic: true
                         }
                         color: Theme.primaryColor
                         wrapMode: Text.Wrap
                         width: parent.width
                         textFormat: Text.StyledText
+                        onLinkActivated: {
+                            Qt.openUrlExternally(link)
+                        }
+                        linkColor: Theme.highlightColor
                     }
+                }
+
+                Separator {
+                    id: profileSeparatorTop
+                    width: parent.width
+                    color: Theme.primaryColor
+                    horizontalAlignment: Qt.AlignHCenter
                 }
 
                 Row {
@@ -160,7 +168,7 @@ Item {
                         id: profilePicturesCountText
                         text: qsTr("%1 Photos").arg(Number(profileModel.person.photos.count._content).toLocaleString(Qt.locale(), "f", 0))
                         font.pixelSize: componentFontSize
-                        //horizontalAlignment: Text.AlignHCenter
+                        horizontalAlignment: Text.AlignHCenter
                         color: Theme.primaryColor
                         wrapMode: Text.Wrap
                         width: parent.width
@@ -179,9 +187,9 @@ Item {
                         id: profileJoinedText
                         text: qsTr("Joined in %1").arg(Functions.getDateFromTimestamp(profileModel.person.photos.firstdate._content).toLocaleDateString(Qt.locale(), "MMMM yyyy"))
                         font.pixelSize: componentFontSize
-                        //horizontalAlignment: Text.AlignHCenter
                         color: Theme.primaryColor
                         wrapMode: Text.NoWrap
+                        horizontalAlignment: Text.AlignHCenter
                         width: parent.width
                         elide: Text.ElideRight
                     }
@@ -222,7 +230,7 @@ Item {
                 }
 
                 Separator {
-                    id: profileSeparator
+                    id: profileSeparatorBottom
                     width: parent.width
                     color: Theme.primaryColor
                     horizontalAlignment: Qt.AlignHCenter
@@ -343,10 +351,15 @@ Item {
         }
     }
 
-    SilicaListView {
-        id: profileTimelineListView
+    SilicaGridView {
+        id: albumPhotosGridView
 
         header: profileListHeaderComponent
+
+        onModelChanged: {
+            console.log("WAAAAH " + count);
+            console.log(width + "x" + height);
+        }
 
         anchors {
             top: parent.top
@@ -356,12 +369,16 @@ Item {
             right: parent.right
         }
 
+        cellWidth: width / 3;
+        cellHeight: width / 3;
         clip: true
 
         model: profileTimeline
-//        delegate: Tweet {
-//            tweetModel: modelData
-//        }
+        delegate: PhotoThumbnail {
+            photoData: modelData
+            width: albumPhotosGridView.cellWidth
+            height: albumPhotosGridView.cellHeight
+        }
         VerticalScrollDecorator {}
     }
 

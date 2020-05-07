@@ -34,6 +34,7 @@ DISTFILES += qml/harbour-fernweh.qml \
     qml/components/*.qml \
     qml/pages/AlbumPhotosPage.qml \
     qml/pages/ImagePage.qml \
+    qml/pages/ProfilePage.qml \
     qml/pages/SettingsPage.qml \
     rpm/harbour-fernweh.changes.in \
     rpm/harbour-fernweh.spec \

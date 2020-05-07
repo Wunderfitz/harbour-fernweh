@@ -17,6 +17,51 @@
     along with Fernweh. If not, see <http://www.gnu.org/licenses/>.
 */
 
+function getLicenseInfoById(licenses, id) {
+    for (var i = 0; i < licenses.license.length; i++) {
+        if (licenses.license[i].id === id) {
+            return licenses.license[i];
+        }
+    }
+}
+
+function getLocationString(photoInfo) {
+    var locationString = "";
+    if (!photoInfo.photo.location) {
+        locationString = "n/a";
+        return locationString;
+    }
+    if (photoInfo.photo.location.country && photoInfo.photo.location.country._content !== "") {
+        locationString = photoInfo.photo.location.country._content;
+    }
+    if (photoInfo.photo.location.region) {
+        if (locationString !== "") {
+            locationString += ", ";
+        }
+        locationString += photoInfo.photo.location.region._content;
+    }
+    if (photoInfo.photo.location.county && photoInfo.photo.location.county._content !== "") {
+        if (locationString !== "") {
+            locationString += ", ";
+        }
+        locationString += photoInfo.photo.location.county._content;
+    }
+    if (photoInfo.photo.location.locality && photoInfo.photo.location.locality._content !== "") {
+        if (locationString !== "") {
+            locationString += ", ";
+        }
+        locationString += photoInfo.photo.location.locality._content;
+    }
+    if (photoInfo.photo.location.neighborhood && photoInfo.photo.location.neighborhood._content !== "") {
+        if (locationString !== "") {
+            locationString += ", ";
+        }
+        locationString += photoInfo.photo.location.neighborhood._content;
+    }
+
+    return locationString;
+}
+
 function getProfileBackgroundUrl(userInformation) {
     var profileBackgroundUrl = "https://farm" + userInformation.iconfarm + ".staticflickr.com/" + userInformation.iconserver + "/coverphoto/" + userInformation.nsid + ".jpg";
     console.log("Using background image URL " + profileBackgroundUrl);

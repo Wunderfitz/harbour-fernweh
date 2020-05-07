@@ -81,15 +81,59 @@
 <context>
     <name>ImagePage</name>
     <message>
-        <source>Download</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Download of %1 successful.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <source>Download failed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Photo Details</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Title</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>n/a</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date Taken</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Views</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Author</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>License</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Location</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy URL to Clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open in Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Download Photo</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Go to Author&apos;s Profile</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -251,6 +295,17 @@
     <name>ProfileButton</name>
     <message>
         <source>Profile</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ProfilePage</name>
+    <message>
+        <source>Open in Browser</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy URL to Clipboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

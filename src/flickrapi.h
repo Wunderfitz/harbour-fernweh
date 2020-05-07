@@ -36,6 +36,7 @@ const char CUSTOM_HEADER_SERVER[] = "X-Fernweh-Server";
 const char CUSTOM_HEADER_ID[] = "X-Fernweh-Id";
 const char CUSTOM_HEADER_SECRET[] = "X-Fernweh-Secret";
 const char CUSTOM_HEADER_SIZE[] = "X-Fernweh-Size";
+const char CUSTOM_HEADER_ICONKIND[] = "X-Fernweh-Iconkind";
 
 class FlickrApi : public QObject
 {
@@ -48,6 +49,7 @@ public:
     Q_INVOKABLE void peopleGetInfo(const QString &userId);
     Q_INVOKABLE void peopleGetPhotos(const QString &userId, const int &page = 1);
     Q_INVOKABLE void downloadPhoto(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
+    Q_INVOKABLE void downloadIcon(const QString &farm, const QString &server, const QString &id, const QString &iconKind );
     Q_INVOKABLE void copyPhotoToDownloads(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
     Q_INVOKABLE void statsGetTotalViews();
     Q_INVOKABLE void photosetsGetList(const QString &userId, const int &page = 1);
@@ -70,6 +72,8 @@ signals:
     void downloadError(const QVariantMap &downloadIds, const QString &errorMessage);
     void downloadSuccessful(const QVariantMap &downloadIds, const QString &filePath);
     void downloadStatus(const QVariantMap &downloadIds, int percentCompleted);
+    void downloadIconError(const QVariantMap &downloadIds, const QString &errorMessage);
+    void downloadIconSuccessful(const QVariantMap &downloadIds, const QString &filePath);
     void copyToDownloadsSuccessful(const QVariantMap &downloadIds, const QString &fileName, const QString &filePath);
     void copyToDownloadsError(const QVariantMap &downloadIds);
     void statsGetTotalViewsSuccessful(const QVariantMap &result);
@@ -101,6 +105,8 @@ public slots:
     void handleDownloadError(QNetworkReply::NetworkError error);
     void handleDownloadFinished();
     void handleDownloadProgress(qint64 bytesSent, qint64 bytesTotal);
+    void handleDownloadIconError(QNetworkReply::NetworkError error);
+    void handleDownloadIconFinished();
     void handleStatsGetTotalViewsSuccessful();
     void handleStatsGetTotalViewsError(QNetworkReply::NetworkError error);
     void handlePhotosetsGetListSuccessful();
@@ -121,6 +127,7 @@ public slots:
 private:
     QVariantMap getDownloadIds(const QNetworkRequest &request);
     QString getCacheFilePath(const QString &farm, const QString &server, const QString &id, const QString &secret, const QString &size);
+    QString getCacheIconPath(const QString &farm, const QString &server, const QString &id, const QString &iconKind);
     QString getDownloadFilePath(const QString &id);
     QString getDownloadFileName(const QString &id);
 
