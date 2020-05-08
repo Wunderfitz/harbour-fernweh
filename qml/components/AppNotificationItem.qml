@@ -66,7 +66,7 @@ Item {
     MouseArea {
         anchors.fill: parent
         onClicked: {
-            twitterApi.handleAdditionalInformation(notificationItem.additionalInformation);
+            flickrApi.handleAdditionalInformation(notificationItem.additionalInformation);
         }
         visible: additionalInformation ? true : false
     }

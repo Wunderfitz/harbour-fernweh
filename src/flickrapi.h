@@ -60,6 +60,7 @@ public:
     Q_INVOKABLE void photosGetExif(const QString &photoId, const QString &secret);
     Q_INVOKABLE void photosGetFavorites(const QString &photoId);
     Q_INVOKABLE void photosLicensesGetInfo();
+    Q_INVOKABLE void handleAdditionalInformation(const QString &additionalInformation);
 
 signals:
     void testLoginSuccessful(const QVariantMap &result);

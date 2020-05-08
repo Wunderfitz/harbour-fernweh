@@ -69,15 +69,7 @@ Page {
             console.log("Loading profile for " + userId);
             flickrApi.peopleGetInfo(userId);
         } else {
-            if (!profileModel.created_at) {
-                // For mentions we don't have the complete information...
-                userId = profileModel.person.id;
-                console.log("Loading complete profile for " + userId);
-                twitterApi.showUser(userId);
-            } else {
-                profilePage.userId = profilePage.profileModel.person.id;
-                loaded = true;
-            }
+            loaded = true;
         }
     }
 

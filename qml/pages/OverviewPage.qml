@@ -662,6 +662,38 @@ Page {
                             height: parent.height
                             width: parent.width
                         }
+
+                        Column {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                            }
+                            width: parent.width
+
+                            id: ownPhotosNoResultsColumn
+                            Behavior on opacity { NumberAnimation {} }
+                            opacity: ownPhotosGridView.count === 0 ? 1 : 0
+                            visible: ownPhotosGridView.count === 0 ? true : false
+
+                            Image {
+                                id: ownPhotosNoResultsImage
+                                source: "../../images/fernweh.png"
+                                anchors {
+                                    horizontalCenter: parent.horizontalCenter
+                                }
+
+                                fillMode: Image.PreserveAspectFit
+                                width: 1/3 * parent.width
+                            }
+
+                            InfoLabel {
+                                id: ownPhotosNoResultsText
+                                text: qsTr("No own photos found")
+                                color: Theme.primaryColor
+                                font.pixelSize: Theme.fontSizeLarge
+                                width: parent.width - 2 * Theme.horizontalPageMargin
+                            }
+                        }
+
                     }
 
                     Item {
@@ -774,6 +806,37 @@ Page {
                             }
                         }
 
+                        Column {
+                            anchors {
+                                verticalCenter: parent.verticalCenter
+                            }
+                            width: parent.width
+
+                            id: ownAlbumsNoResultsColumn
+                            Behavior on opacity { NumberAnimation {} }
+                            opacity: ownAlbumsListView.count === 0 ? 1 : 0
+                            visible: ownAlbumsListView.count === 0 ? true : false
+
+                            Image {
+                                id: ownAlbumsNoResultsImage
+                                source: "../../images/fernweh.png"
+                                anchors {
+                                    horizontalCenter: parent.horizontalCenter
+                                }
+
+                                fillMode: Image.PreserveAspectFit
+                                width: 1/3 * parent.width
+                            }
+
+                            InfoLabel {
+                                id: ownAlbumsNoResultsText
+                                text: qsTr("No own albums found")
+                                color: Theme.primaryColor
+                                font.pixelSize: Theme.fontSizeLarge
+                                width: parent.width - 2 * Theme.horizontalPageMargin
+                            }
+                        }
+
                     }
 
                     Item {
@@ -801,6 +864,10 @@ Page {
                                 searchColumn.photoSearchInTransition = false;
                                 overviewNotification.show(errorMessage);
                                 resetFocus();
+                            }
+                            onSearchPhotosEndReached: {
+                                searchResultsGridView.footer = null;
+                                overviewNotification.show(qsTr("No more photos found! That seems to be all for your search... :("));
                             }
                         }
 

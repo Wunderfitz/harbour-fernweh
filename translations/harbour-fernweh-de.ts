@@ -253,6 +253,18 @@
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>No more photos found! That seems to be all for your search... :(</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No own photos found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No own albums found</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>OwnAlbumsButton</name>
@@ -367,13 +379,6 @@
     <name>TrendingButton</name>
     <message>
         <source>Trending</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>User</name>
-    <message>
-        <source>Copy URL to Clipboard</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

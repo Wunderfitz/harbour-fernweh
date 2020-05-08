@@ -22,6 +22,7 @@
 #include <QFile>
 #include <QDir>
 #include <QImage>
+#include <QProcess>
 
 FlickrApi::FlickrApi(O1Requestor *requestor, QNetworkAccessManager *manager, QObject *parent) : QObject(parent)
 {
@@ -114,7 +115,7 @@ void FlickrApi::downloadPhoto(const QString &farm, const QString &server, const 
     QUrl url = QUrl("https://farm" + farm + ".staticflickr.com/" + server + "/" + id + "_" + secret + "_" + size + ".jpg");
     QNetworkRequest request(url);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Wayland; SailfishOS) Piepmatz (Not Firefox/42.0)");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Wayland; SailfishOS) Fernweh (Not Firefox/42.0)");
     request.setRawHeader(QByteArray("Accept"), QByteArray("image/jpg,image/jpeg"));
     request.setRawHeader(QByteArray("Accept-Charset"), QByteArray("utf-8"));
     request.setRawHeader(QByteArray("Connection"), QByteArray("close"));
@@ -147,7 +148,7 @@ void FlickrApi::downloadIcon(const QString &farm, const QString &server, const Q
     QUrl url = QUrl(urlString);
     QNetworkRequest request(url);
     request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
-    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Wayland; SailfishOS) Piepmatz (Not Firefox/42.0)");
+    request.setHeader(QNetworkRequest::UserAgentHeader, "Mozilla/5.0 (Wayland; SailfishOS) Fernweh (Not Firefox/42.0)");
     request.setRawHeader(QByteArray("Accept"), QByteArray("image/jpg,image/jpeg"));
     request.setRawHeader(QByteArray("Accept-Charset"), QByteArray("utf-8"));
     request.setRawHeader(QByteArray("Connection"), QByteArray("close"));
@@ -419,6 +420,20 @@ void FlickrApi::photosLicensesGetInfo()
 
     connect(reply, SIGNAL(error(QNetworkReply::NetworkError)), this, SLOT(handlePhotosLicensesGetInfoError(QNetworkReply::NetworkError)));
     connect(reply, SIGNAL(finished()), this, SLOT(handlePhotosLicensesGetInfoSuccessful()));
+}
+
+void FlickrApi::handleAdditionalInformation(const QString &additionalInformation)
+{
+    qDebug() << "FlickrApi::handleAdditionalInformation" << additionalInformation;
+    // For now only used to open downloaded files...
+    QStringList argumentsList;
+    argumentsList.append(additionalInformation);
+    bool successfullyStarted = QProcess::startDetached("xdg-open", argumentsList);
+    if (successfullyStarted) {
+        qDebug() << "Successfully opened file " << additionalInformation;
+    } else {
+        qDebug() << "Error opening file " << additionalInformation;
+    }
 }
 
 void FlickrApi::handleTestLoginSuccessful()
