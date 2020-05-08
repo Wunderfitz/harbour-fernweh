@@ -318,6 +318,10 @@
         <source>&lt;b&gt;Gallery Views:&lt;/b&gt; %1</source>
         <translation>&lt;b&gt;Betrachtungen der Galerien:&lt;/b&gt; %1</translation>
     </message>
+    <message>
+        <source>No statistics available</source>
+        <translation>Keine Statistiken verfügbar</translation>
+    </message>
 </context>
 <context>
     <name>ProfileButton</name>
@@ -394,7 +398,7 @@
     </message>
     <message>
         <source>Please enter the Flickr PIN:</source>
-        <translation>itte geben Sie die Flickr PIN ein:</translation>
+        <translation>Bitte geben Sie die Flickr PIN ein:</translation>
     </message>
     <message>
         <source>Unable to authenticate you with the entered PIN.</source>
@@ -426,7 +430,7 @@
     </message>
     <message>
         <source>Sign up for Flickr</source>
-        <translation>Bei Twitter registrieren</translation>
+        <translation>Bei Flickr registrieren</translation>
     </message>
 </context>
 </TS>

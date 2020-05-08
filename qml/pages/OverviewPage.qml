@@ -576,8 +576,8 @@ Page {
 
                             width: parent.width
                             height: parent.height
-                            visible: ownPicturesView.loaded
-                            opacity: ownPicturesView.loaded ? 1 : 0
+                            visible: ( ownPicturesView.loaded && count > 0 )
+                            opacity: ( ownPicturesView.loaded && count > 0 ) ? 1 : 0
                             Behavior on opacity { NumberAnimation {} }
 
                             cellWidth: width / 3;

@@ -194,6 +194,7 @@ Item {
                         horizontalAlignment: Text.AlignHCenter
                         width: parent.width
                         elide: Text.ElideRight
+                        visible: profileModel.person.photos.firstdate._content ? true : false
                     }
                 }
 
@@ -242,6 +243,19 @@ Item {
                 SectionHeader {
                     text: qsTr("Statistics")
                     visible: profileItem.ownProfile
+                }
+
+                Text {
+                    id: noStatisticsText
+                    text: qsTr("No statistics available")
+                    font.pixelSize: componentFontSize
+                    color: Theme.primaryColor
+                    width: parent.width - ( 2 * Theme.horizontalPageMargin )
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    wrapMode: Text.Wrap
+                    textFormat: Text.StyledText
+                    visible: profileItem.ownProfile && (typeof overviewPage.myStats.stats === "undefined")
                 }
 
                 Text {
