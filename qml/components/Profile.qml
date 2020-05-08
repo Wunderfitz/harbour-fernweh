@@ -294,7 +294,7 @@ Item {
 
                 Text {
                     id: galleryViewsText
-                    text: qsTr("<b>Photostream Views:</b> %1").arg(Number(overviewPage.myStats.stats.galleries.views).toLocaleString(Qt.locale(), "f", 0))
+                    text: qsTr("<b>Gallery Views:</b> %1").arg(Number(overviewPage.myStats.stats.galleries.views).toLocaleString(Qt.locale(), "f", 0))
                     font.pixelSize: componentFontSize
                     color: Theme.primaryColor
                     width: parent.width - ( 2 * Theme.horizontalPageMargin )

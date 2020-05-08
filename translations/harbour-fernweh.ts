@@ -314,6 +314,10 @@
         <source>&lt;b&gt;Collection Views:&lt;/b&gt; %1</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&lt;b&gt;Gallery Views:&lt;/b&gt; %1</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ProfileButton</name>
