@@ -50,7 +50,7 @@ Page {
             }
 
             Label {
-                text: "Fernweh 0.1"
+                text: "Fernweh 0.1.1"
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: Theme.fontSizeExtraLarge
                 anchors {

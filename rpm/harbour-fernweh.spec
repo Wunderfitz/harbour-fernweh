@@ -9,8 +9,8 @@ Name:       harbour-fernweh
 # << macros
 
 Summary:    Fernweh is a Flickr client for Sailfish OS
-Version:    0.1
-Release:    7
+Version:    0.1.1
+Release:    1
 Group:      Qt/Qt
 License:    LICENSE
 URL:        http://werkwolf.eu/
