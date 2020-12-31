@@ -45,7 +45,7 @@
     </message>
     <message>
         <source>This project uses OAuth for Qt by Akos Polster. Thanks for making it available under the conditions of the BSD-2-Clause license!</source>
-        <translation>该项目采用 Akos Polster 开发的 OAuth for Qt 。感谢使它在  BSD-2-Clause 许可协议下可用。</translation>
+        <translation>该项目采用了 Akos Polster 开发的 OAuth for Qt 。感谢使它在  BSD-2-Clause 许可协议下可用。</translation>
     </message>
     <message>
         <source>Open OAuth for Qt on GitHub</source>
@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>This product uses the Flickr API but is not endorsed or certified by SmugMug, Inc.</source>
-        <translation>该产品使用了 Flickr API 但并未得到 SmugMug, Inc. 背书或认证。</translation>
+        <translation>该产品采用了 Flickr API 但并未得到 SmugMug, Inc. 背书或认证。</translation>
     </message>
 </context>
 <context>
@@ -288,7 +288,7 @@
     </message>
     <message>
         <source>%1 Photos</source>
-        <translation> %1 张图片</translation>
+        <translation>%1 张图片</translation>
     </message>
     <message>
         <source>Statistics</source>
@@ -320,7 +320,7 @@
     </message>
     <message>
         <source>No statistics available</source>
-        <translation>无更多可用数据</translation>
+        <translation>暂无更多可用数据</translation>
     </message>
 </context>
 <context>
@@ -380,7 +380,7 @@
     </message>
     <message>
         <source>Large (Sailfish OS default)</source>
-        <translation>大（旗鱼系统默认）</translation>
+        <translation>大号（旗鱼系统默认）</translation>
     </message>
 </context>
 <context>
