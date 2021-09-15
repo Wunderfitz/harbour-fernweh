@@ -177,6 +177,20 @@ Page {
                 onLinkActivated: Qt.openUrlExternally("https://github.com/pipacs/o2")
             }
 
+            Text {
+                x: Theme.horizontalPageMargin
+                width: parent.width  - ( 2 * Theme.horizontalPageMargin )
+                text: "Includes a modified version of <pre>DetailItem.qml</pre> - originally part of the Sailfish Silica UI component package, licensed under the terms of BSD license, copyright (C) 2014-2015 Jolla Ltd., copyright (c) 2019 Open Mobile Platform LLC. Contact: <a href=\"mailto:joona.petrell@jollamobile.com\">Joona Petrell</a>, All rights reserved."
+                font.pixelSize: Theme.fontSizeExtraSmall
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                }
+                linkColor: Theme.highlightColor
+                onLinkActivated: Qt.openUrlExternally(link)
+                wrapMode: Text.Wrap
+                color: Theme.primaryColor
+            }
+
             Label {
                 id: separatorLabel
                 x: Theme.horizontalPageMargin

@@ -29,6 +29,7 @@ SOURCES += src/harbour-fernweh.cpp \
 DISTFILES += qml/harbour-fernweh.qml \
     qml/components/Album.qml \
     qml/components/BackgroundProgressIndicator.qml \
+    qml/components/DetailItemStyled.qml \
     qml/components/PhotoThumbnail.qml \
     qml/pages/*.qml \
     qml/components/*.qml \

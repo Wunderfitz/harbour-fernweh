@@ -7,6 +7,8 @@ Sebastian J. Wolf [sebastian@ygriega.de](mailto:sebastian@ygriega.de)
 ## License
 Licensed under GNU GPLv3
 
+Includes a modified version of `DetailItem.qml`, originally part of the Sailfish Silica UI component package, licensed under the terms of BSD license, copyright (C) 2014-2015 Jolla Ltd., copyright (c) 2019 Open Mobile Platform LLC. Contact: [Joona Petrell](mailto:joona.petrell@jollamobile.com), All rights reserved.
+
 ## Build
 Simply clone this repository and use the project file `harbour-fernweh.pro` to import the sources in your SailfishOS IDE. To build and run Fernweh or an application which is based on Fernweh, you need to create the file `harbour-fernweh/src/o2/o1flickrglobals.h` and enter the required constants in the following format:
 ```
