@@ -14,3 +14,8 @@
 
 * Sat May 09 2020 Sebastian Wolf <sebastian@ygriega.de> 0.1
 - Initial release
+
+* Thu Sep 16 2021 Sebastian Wolf <sebastian@ygriega.de> 0.1.1
+- Enable links in picture details
+- Swedish translation (thanks to eson57)
+- Chinese translation (thanks to dashinfrantry)
