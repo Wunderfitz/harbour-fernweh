@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>This product uses the Flickr API but is not endorsed or certified by SmugMug, Inc.</source>
-        <translation>Questo prodotto usa l'API di Flickr ma non è sponsorizzato né certificato da SmugMug, Inc.</translation>
+        <translation>Questo prodotto usa l&apos;API di Flickr ma non è sponsorizzato né certificato da SmugMug, Inc.</translation>
     </message>
 </context>
 <context>
@@ -134,7 +134,7 @@
     </message>
     <message>
         <source>Go to Author&apos;s Profile</source>
-        <translation>Vai sul profilo dell'autore</translation>
+        <translation>Vai sul profilo dell&apos;autore</translation>
     </message>
     <message>
         <source>Favorited</source>
@@ -326,7 +326,8 @@
 <context>
     <name>ProfileButton</name>
     <message>
-        <source>Profile</source>Profilo"unfinished"></translation>
+        <source>Profile</source>
+        <translation>Profilo</translation>
     </message>
 </context>
 <context>
@@ -417,7 +418,7 @@
     </message>
     <message>
         <source>Please login to Flickr to continue.</source>
-        <translation>Effettua l'accesso a Flickr</translation>
+        <translation>Effettua l&apos;accesso a Flickr</translation>
     </message>
     <message>
         <source>Log in to Flickr</source>

@@ -75,6 +75,7 @@ INSTALLS += 86.png 108.png 128.png 172.png 256.png \
             fernweh.desktop gui images
 
 TRANSLATIONS += translations/harbour-fernweh-de.ts \
+                translations/harbour-fernweh-it.ts \
                 translations/harbour-fernweh-sv.ts \
                 translations/harbour-fernweh-zh_CN.ts
 

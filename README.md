@@ -29,3 +29,4 @@ This project uses
 Piepmatz was translated to several languages. Thanks to all contributors!
 - Chinese: [dashinfantry](https://github.com/dashinfantry)
 - Swedish: [Åke Engelbrektson](https://github.com/eson57)
+- Italian: [legacychimera247](https://github.com/legacychimera247)
