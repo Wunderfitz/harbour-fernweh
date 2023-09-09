@@ -207,7 +207,7 @@
     </message>
     <message>
         <source>What are you looking for?</source>
-        <translation>Che stai cercando?</translation>
+        <translation>Cosa stai cercando?</translation>
     </message>
     <message>
         <source>No results found</source>
@@ -239,7 +239,7 @@
     </message>
     <message>
         <source>No more interesting photos found. Well, that&apos;s sad... :(</source>
-        <translation>Nessun altra foto interessante trovata. È triste, sai? :(</translation>
+        <translation>Nessun'altra foto interessante trovata. È triste, sai? :(</translation>
     </message>
     <message>
         <source>Load more pictures</source>
@@ -255,7 +255,7 @@
     </message>
     <message>
         <source>No more photos found! That seems to be all for your search... :(</source>
-        <translation>Nessun altra foto trovata! Uh, sembra la fine delle tue ricerche...</translation>
+        <translation>Nessun'altra foto trovata! Uh, sembra la fine delle tue ricerche...</translation>
     </message>
     <message>
         <source>No own photos found</source>
